@@ -34,6 +34,9 @@ INSTALLED_APPS = [
     'accounts',
     'assets',
     'rest_framework',
+    # django-allauth
+    'allauth',
+    'allauth.socialaccount.providers.kakao',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -120,3 +123,26 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# kakao social login 
+KAKAO_REST_API_KEY = env.KAKAO_REST_API_KEY
+SOCIAL_AUTH_KAKAO_SECRET = env.SOCIAL_AUTH_KAKAO_SECRET
+
+# rest framework
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
+    ],
+}
+
+ACCOUNT_AUTHENTICATED_LOGIN_REDIRECTS = True
+# LOGIN_REDIRECT_URL = "/"
+ACCOUNT_AUTHENTICATED_LOGOUT_REDIRECTS = True
+# ACCOUNT_LOGOUT_REDIRECT_URL = "/"
+
+# User model
+AUTH_USER_MODEL = "accounts.User"
