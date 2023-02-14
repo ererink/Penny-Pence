@@ -11,6 +11,7 @@ class Ranking(models.Model):
     # user = models.ForeignKey(AUTH_USER_MODEL, on_delete=models.CASCADE) # 닉네임 끌고오기
     
 class Sector(models.Model):
+    game_date = models.ForeignKey(GameDate, on_delete=models.CASCADE) # 일자
     sector_name = models.CharField(max_length=20) # title
     content = models.CharField(max_length=100) # content
     price = models.IntegerField() # 주가

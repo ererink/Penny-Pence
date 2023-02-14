@@ -14,9 +14,14 @@ class RankingSerializer(serializers.ModelSerializer):
 class SectorSerializer(serializers.ModelSerializer):
     class Meta:
         model = Sector
-        fields = '__all__'
+        fields = (
+            'sector_name',
+            'content',
+            'price',
+            )
 
 class NewsSerializer(serializers.ModelSerializer):
     class Meta:
         model = News
         fields = '__all__'
+
