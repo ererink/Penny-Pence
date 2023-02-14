@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 
 from pathlib import Path
 import env
+from datetime import timedelta
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -33,19 +35,37 @@ ALLOWED_HOSTS = ['*']
 INSTALLED_APPS = [
     'accounts',
     'assets',
-    'rest_framework',
-    # django-allauth
-    'allauth',
-    'allauth.socialaccount.providers.kakao',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    
+    # third party
+    # django-rest-auth
+    'rest_framework',
+    'rest_framework_simplejwt',
+    'rest_framework.authtoken',
+  
+    # django-allauth
+    'django.contrib.sites',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'dj_rest_auth',
+    'dj_rest_auth.registration',
+    'django_filters',
+    
+    # provider
+    'allauth.socialaccount.providers.kakao',
+
+    # CORS -> 프론트와 연결
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -133,16 +153,37 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticated',
     ),
-    'DEFAULT_AUTHENTICATION_CLASSES': [
+    'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.SessionAuthentication',
-        'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
-    ],
+        'dj_rest_auth.jwt_auth.JWTCookieAuthentication',
+    ),
 }
 
 ACCOUNT_AUTHENTICATED_LOGIN_REDIRECTS = True
-# LOGIN_REDIRECT_URL = "/"
+LOGIN_REDIRECT_URL = "/"
 ACCOUNT_AUTHENTICATED_LOGOUT_REDIRECTS = True
-# ACCOUNT_LOGOUT_REDIRECT_URL = "/"
+ACCOUNT_LOGOUT_REDIRECT_URL = "/"
 
 # User model
 AUTH_USER_MODEL = "accounts.User"
+
+# dj-rest-auth 설정
+REST_USE_JWT = True
+
+# django-allauth 설정
+SITE_ID = 1
+ACCOUNT_USER_MODEL_USERNAME_FIELD = None            # username 필드 사용 안함
+ACCOUNT_EMAIL_REQUIRED = True                       # email 필드 사용 
+ACCOUNT_UNIQUE_EMAIL = True
+ACCOUNT_USERNAME_REQUIRED = False                   # username 필드 사용 안함
+ACCOUNT_AUTHENTICATION_METHOD = 'email'             # 이메일로 로그인
+ACCOUNT_EMAIL_VERIFICATION = 'none'                 # 회원가입 시 이메일 인증 사용 안함
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=7),     # access 토큰 유효기간 테스트 할땐 짧게
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
+    'ROTATE_REFRESH_TOKENS': False,
+    'BLACKLIST_AFTER_ROTATION': True,
+}
