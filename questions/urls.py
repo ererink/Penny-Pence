@@ -1,11 +1,11 @@
 from django.urls import path, include
-from rest_framework.routers import DefaultRouter
-from . import views
+from rest_framework import routers
+from .views import QuestionViewSet, CommentViewSet, LikeViewSet
 
-router = DefaultRouter()
-router.register('questions', views.QuestionViewSet)
-router.register('comments', views.CommentViewSet)
-router.register('likes', views.LikeViewSet)
+router = routers.DefaultRouter()
+router.register('questions', QuestionViewSet)
+router.register('comments', CommentViewSet)
+router.register('likes', LikeViewSet, basename='like')
 
 urlpatterns = [
     path('', include(router.urls)),
