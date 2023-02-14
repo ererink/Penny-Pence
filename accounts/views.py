@@ -12,7 +12,7 @@ from allauth.socialaccount.providers.kakao import views as kakao_view
 from allauth.socialaccount.providers.oauth2.client import OAuth2Client
 
 # Create your views here.
-BASE_URL = 'http://127.0.0.1:8000/'
+BASE_URL = 'http://localhost:8000/'
 KAKAO_CALLBACK_URI = BASE_URL + 'accounts/kakao/callback/'
 
 

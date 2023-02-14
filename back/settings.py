@@ -171,7 +171,7 @@ AUTH_USER_MODEL = "accounts.User"
 REST_USE_JWT = True
 
 # django-allauth 설정
-SITE_ID = 1
+SITE_ID = 3
 ACCOUNT_USER_MODEL_USERNAME_FIELD = None            # username 필드 사용 안함
 ACCOUNT_EMAIL_REQUIRED = True                       # email 필드 사용 
 ACCOUNT_UNIQUE_EMAIL = True
