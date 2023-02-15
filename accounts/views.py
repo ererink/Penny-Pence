@@ -11,7 +11,19 @@ from dj_rest_auth.registration.views import SocialLoginView
 from allauth.socialaccount.providers.kakao import views as kakao_view
 from allauth.socialaccount.providers.oauth2.client import OAuth2Client
 
-# Create your views here.
+from rest_framework import serializers
+from rest_framework import authentication, viewsets
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = "__all__"
+
+class UserViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    
+    
 BASE_URL = 'http://localhost:8000/'
 KAKAO_CALLBACK_URI = BASE_URL + 'accounts/kakao/callback/'
 
@@ -30,7 +42,7 @@ def kakao_callback(request):
     # Access Token Request
     token_req = requests.get(f"https://kauth.kakao.com/oauth/token?grant_type=authorization_code&client_id={rest_api_key}&redirect_uri={redirect_uri}&code={code}")
     token_req_json = token_req.json()       # json으로 변환
-    error = token_req_json.get("error")     # 에러 부분 파싱
+    error = token_req_json.get('error')     # 에러 부분 파싱
     
     if error is not None:
         raise JSONDecodeError(error)
@@ -42,29 +54,46 @@ def kakao_callback(request):
     profile_json = profile_request.json()
     kakao_account = profile_json.get('kakao_account')
     
-    # print(kakao_account) => 이메일, 프로필 사진, 배경 사진 url 가져올 수 있음
+    # print(kakao_account) 
+    # => 이메일, 프로필 사진, 배경 사진 url 가져올 수 있음
     email = kakao_account.get('email')
-
+    profile = kakao_account.get('profile')
+    nickname = profile.get('nickname')
+    profile_img = profile.get('profile_image')
+    
     # Signup or Login Request
     try:
-        user = User.objects.get(email=email)                # 이메일 확인
+        user = User.objects.get(email=email)               
         social_user = SocialAccount.objects.get(user=user)
         
-        if social_user is None:
-            return JsonResponse({'err_msg': 'email exists but not social user'}, status=status.HTTP_400_BAD_REQUEST)
-
+        # if social_user is None:
+        #     return JsonResponse({'err_msg': 'email exists but not social user'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        data = {'access_token': access_token, 'code': code}
+        
+        accept = requests.post(f"{BASE_URL}accounts/kakao/login/finish/", data=data)
+        accept_status = accept.status_code
+        
+        if accept_status != 200:
+            return JsonResponse({'err_msg': 'failed to signin'}, status=accept_status)
+        
+        accept_json = accept.json()
+        return JsonResponse(accept_json)
+    
     # 가입된 유저가 아닐 시 가입
     except User.DoesNotExist:
         data = {'access_token': access_token, 'code': code}
         accept = requests.post(f"{BASE_URL}accounts/kakao/login/finish/", data=data)
         accept_status = accept.status_code
-        print(accept)
+
         if accept_status != 200:
             return JsonResponse({'err_msg': 'failed to signup'}, status=accept_status)
         
         # 사용자의 pk, email, first name, last name과 Access Token, Refresh token 가져오기
         accept_json = accept.json()
-        print(accept_json)   
+        
+        User.objects.filter(email=email).update(nickname=nickname, profile_img=profile_img)
+        
         return JsonResponse(accept_json)
 
 class KakaoLogin(SocialLoginView):

@@ -8,4 +8,7 @@ urlpatterns = [
     path('kakao/login/', views.kakao_login, name='kakao_login'),
     path('kakao/callback/', views.kakao_callback, name='kakao_callback'),
     path('kakao/login/finish/', views.KakaoLogin.as_view(), name='kakao_login_todjango'),
+    
+    # 유저 정보 확인
+    path('user_info/',views.UserViewSet.as_view({'get': 'list'})),
 ]
