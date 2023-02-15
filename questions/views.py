@@ -3,6 +3,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.exceptions import ValidationError
 from .models import Question, Comment, Like
+from django.contrib.contenttypes.models import ContentType
 from .serializers import QuestionSerializer, CommentSerializer, LikeSerializer
 
 class QuestionViewSet(viewsets.ModelViewSet):
@@ -31,14 +32,17 @@ class QuestionViewSet(viewsets.ModelViewSet):
     def like(self, request, pk=None):
         question = self.get_object()
         user = request.user
+        content_type = ContentType.objects.get_for_model(question)
         try:
-            like = Like.objects.get(question=question, user=user)
+            like = Like.objects.get(content_type=content_type, object_id=question.id, user=user)
             like.delete()
-            return Response({'detail': 'Question unliked.'})
+            like_count = question.likes.count()
+            return Response({'detail': 'Question unliked.', 'like_count': like_count})
         except Like.DoesNotExist:
-            like = Like(question=question, user=user)
+            like = Like(content_object=question, user=user)
             like.save()
-            return Response({'detail': 'Question liked.'})
+            like_count = question.likes.count()
+            return Response({'detail': 'Question liked.', 'like_count': like_count})
 
 
 class CommentViewSet(viewsets.ModelViewSet):
@@ -52,20 +56,24 @@ class CommentViewSet(viewsets.ModelViewSet):
     def like(self, request, pk=None):
         comment = self.get_object()
         user = request.user
+        content_type = ContentType.objects.get_for_model(comment)
         try:
-            like = Like.objects.get(comment=comment, user=user)
+            like = Like.objects.get(content_type=content_type, object_id=comment.id, user=user)
             like.delete()
-            return Response({'detail': 'Comment unliked.'})
+            like_count = comment.likes.count()
+            return Response({'detail': 'Comment unliked.', 'like_count': like_count})
         except Like.DoesNotExist:
-            like = Like(comment=comment, user=user)
+            like = Like(content_object=comment, user=user)
             like.save()
-            return Response({'detail': 'Comment liked.'})
+            like_count = comment.likes.count()
+            return Response({'detail': 'Comment liked.', 'like_count': like_count})
         
     @action(detail=True, methods=['post'])
     def replies(self, request, pk=None):
         parent_comment = self.get_object()
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
+        print(self, request.data)
         serializer.save(user=self.request.user, parent=parent_comment)
         return Response(serializer.data)
 
