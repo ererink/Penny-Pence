@@ -2,7 +2,7 @@ from rest_framework import serializers
 from .models import Question, Comment, Like
 
 class CommentSerializer(serializers.ModelSerializer):
-    user = serializers.StringRelatedField()
+    # user = serializers.StringRelatedField()
     like_count = serializers.SerializerMethodField()
 
     class Meta:
@@ -14,7 +14,7 @@ class CommentSerializer(serializers.ModelSerializer):
     
 
 class QuestionSerializer(serializers.ModelSerializer):
-    user = serializers.SerializerMethodField()
+    # user = serializers.SerializerMethodField()
     comments = CommentSerializer(many=True, read_only=True)
 
     class Meta:
