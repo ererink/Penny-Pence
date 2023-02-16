@@ -15,6 +15,7 @@ class SectorSerializer(serializers.ModelSerializer):
     class Meta:
         model = Sector
         fields = (
+            'game_date',
             'sector_name',
             'content',
             'price',
