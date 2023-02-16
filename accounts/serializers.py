@@ -10,8 +10,10 @@ class CustomUserDetailsSerializer(UserDetailsSerializer):
             'nickname',
             'profile_img',
             'email',
+            'money'
             # 추가 예정
         )
+        read_only_fields = ('money', )
 
 class UserInfo(serializers.ModelSerializer):
     user = CustomUserDetailsSerializer(read_only=True)

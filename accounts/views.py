@@ -1,4 +1,7 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import redirect
+from django.shortcuts import get_object_or_404
+from rest_framework.views import APIView
+from rest_framework.response import Response
 import env
 import requests
 from json.decoder import JSONDecodeError
@@ -10,6 +13,8 @@ from json.decoder import JSONDecodeError
 from dj_rest_auth.registration.views import SocialLoginView
 from allauth.socialaccount.providers.kakao import views as kakao_view
 from allauth.socialaccount.providers.oauth2.client import OAuth2Client
+from rest_framework.decorators import api_view
+from accounts.serializers import UserInfo
 
 from rest_framework import serializers
 from rest_framework import authentication, viewsets
@@ -82,6 +87,7 @@ def kakao_callback(request):
         
         accept_json = accept.json()
         
+        # 사용자 정보 저장
         User.objects.filter(email=email).update(nickname=nickname, profile_img=profile_img)
 
         return JsonResponse(accept_json)
@@ -98,6 +104,7 @@ def kakao_callback(request):
         # 사용자의 pk, email, first name, last name과 Access Token, Refresh token 가져오기
         accept_json = accept.json()
         
+        # 사용자 카카오 정보 저장 (이름, 프로필 사진)
         User.objects.filter(email=email).update(nickname=nickname, profile_img=profile_img)
                 
         return JsonResponse(accept_json)
@@ -106,3 +113,28 @@ class KakaoLogin(SocialLoginView):
     adapter_class = kakao_view.KakaoOAuth2Adapter
     client_class = OAuth2Client
     callback_url = KAKAO_CALLBACK_URI
+    
+    
+class UserProfile(APIView):
+    # 유저 정보 출력
+    def get(self, user_pk):
+        user = get_object_or_404(User, pk=user_pk)
+        serializers = UserInfo(user)
+
+        return Response(serializers.data)
+    
+    # 유저 정보 수정
+    def put(self, request, user_pk):
+        user = get_object_or_404(User, pk=user_pk)
+        
+        if user.user_pk == request.user.pk:
+            serializers = UserInfo(data=request.data, instance=user)
+            if serializers.is_valid(raise_exception=True):              
+                serializers.save()
+                return Response(serializers.data)
+            else:
+                return Response(serializers.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+        else:
+            return Response("권한이 없습니다.", status=status.HTTP_403_FORBIDDEN)
+  
