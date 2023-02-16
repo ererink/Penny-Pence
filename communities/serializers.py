@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Question, Comment, Like
+from .models import Question, Comment, Like, Article
 
 class CommentSerializer(serializers.ModelSerializer):
     # user = serializers.StringRelatedField()
@@ -19,6 +19,14 @@ class QuestionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Question
+        fields = '__all__'
+
+class ArticleSerializer(serializers.ModelSerializer):
+    # user = serializers.SerializerMethodField()
+    comments = CommentSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Article
         fields = '__all__'
 
 class LikeSerializer(serializers.ModelSerializer):
