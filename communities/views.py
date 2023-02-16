@@ -6,6 +6,12 @@ from .models import Question, Comment, Like, Article
 from django.contrib.contenttypes.models import ContentType
 from .serializers import QuestionSerializer, CommentSerializer, LikeSerializer, ArticleSerializer
 
+def get_or_none(model, id):
+    try:
+        return model.objects.get(id=id)
+    except model.DoesNotExist:
+        return None
+
 class CommunityViewMixin:
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
@@ -78,7 +84,6 @@ class CommentViewSet(viewsets.ModelViewSet):
         parent_comment = self.get_object()
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        print(self, request.data)
         serializer.save(user=self.request.user, parent=parent_comment)
         return Response(serializer.data)
 
@@ -86,19 +91,22 @@ class LikeViewSet(viewsets.ViewSet):
     serializer_class = LikeSerializer
 
     @action(detail=False, methods=['get'])
-    def question_likes(self, request): 
-        question_id = request.query_params.get('question_id', None)
-        if not question_id:
-            raise ValidationError("Question ID must be provided as a query parameter.")
-        likes = Like.objects.filter(question_id=question_id)
-        serializer = self.serializer_class(likes, many=True)
-        return Response(serializer.data)
-
-    @action(detail=False, methods=['get'])
-    def comment_likes(self, request):
-        comment_id = request.query_params.get('comment_id', None)
-        if not comment_id:
-            raise ValidationError("Comment ID must be provided as a query parameter.")
-        likes = Like.objects.filter(comment_id=comment_id)
-        serializer = self.serializer_class(likes, many=True)
-        return Response(serializer.data)
+    def likes_list(self, request):
+        check_list = ['question_id', 'article_id', 'comment_id']
+        if not request.GET:
+            raise ValidationError('The content type and ID must be provided as query parameters. ex) question=1')
+        for idx, order in enumerate(check_list):
+            id = request.query_params.get(order, None)
+            if id:
+                if not idx:
+                    article = get_or_none(Question, id)
+                elif idx == 1:
+                    article = get_or_none(Article, id)
+                else:
+                    article = get_or_none(Comment, id)
+                if not article:
+                    raise ValidationError('There is no such ID')
+                content_type = ContentType.objects.get_for_model(article)
+                likes = Like.objects.filter(content_type=content_type, object_id=id)
+                serializer = self.serializer_class(likes, many=True)
+                return Response(serializer.data)
