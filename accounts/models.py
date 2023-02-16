@@ -11,7 +11,8 @@ class User(AbstractUser):
    nickname = models.CharField(max_length=8, blank=True)
    refresh_token = models.TextField(blank=True)
    profile_img = models.TextField(blank=True) 
-
+   username = None
+   
    # 부가정보
    money = models.IntegerField(default=100000, blank=True)                       # 자산 (임시로 blank=True 해놓음)
    # sector = models.ForeignKey(Sectors, on_delete=models.CASCADE)
