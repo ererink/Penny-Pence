@@ -2,14 +2,11 @@ from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.exceptions import ValidationError
-from .models import Question, Comment, Like
+from .models import Question, Comment, Like, Article
 from django.contrib.contenttypes.models import ContentType
-from .serializers import QuestionSerializer, CommentSerializer, LikeSerializer
+from .serializers import QuestionSerializer, CommentSerializer, LikeSerializer, ArticleSerializer
 
-class QuestionViewSet(viewsets.ModelViewSet):
-    queryset = Question.objects.all()
-    serializer_class = QuestionSerializer
-
+class CommunityViewMixin:
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
 
@@ -22,29 +19,37 @@ class QuestionViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=['get'])
     def comments(self, request, pk=None):
-        question = self.get_object()
-        comments = Comment.objects.filter(question=question, parent=None).prefetch_related('likes', 'replies__likes')
+        instance = self.get_object()
+        content_type = ContentType.objects.get_for_model(instance)
+        comments = Comment.objects.filter(content_type=content_type, object_id=instance.id, parent=None).prefetch_related('likes', 'replies__likes')
         serializer = CommentSerializer(comments, many=True)
         data = serializer.data
         return Response(data)
 
     @action(detail=True, methods=['post'])
     def like(self, request, pk=None):
-        question = self.get_object()
+        instance = self.get_object()
         user = request.user
-        content_type = ContentType.objects.get_for_model(question)
+        content_type = ContentType.objects.get_for_model(instance)
         try:
-            like = Like.objects.get(content_type=content_type, object_id=question.id, user=user)
+            like = Like.objects.get(content_type=content_type, object_id=instance.id, user=user)
             like.delete()
-            like_count = question.likes.count()
-            return Response({'detail': 'Question unliked.', 'like_count': like_count})
+            like_count = instance.likes.count()
+            return Response({'detail': 'Unliked.', 'like_count': like_count})
         except Like.DoesNotExist:
-            like = Like(content_object=question, user=user)
+            like = Like(content_object=instance, user=user)
             like.save()
-            like_count = question.likes.count()
-            return Response({'detail': 'Question liked.', 'like_count': like_count})
+            like_count = instance.likes.count()
+            return Response({'detail': 'Liked.', 'like_count': like_count})
+        
+class QuestionViewSet(CommunityViewMixin, viewsets.ModelViewSet):
+    queryset = Question.objects.all()
+    serializer_class = QuestionSerializer
 
-
+class ArticleViewSet(CommunityViewMixin, viewsets.ModelViewSet):
+    queryset = Article.objects.all()
+    serializer_class = ArticleSerializer
+        
 class CommentViewSet(viewsets.ModelViewSet):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
