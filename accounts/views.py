@@ -59,7 +59,10 @@ def kakao_callback(request):
     email = kakao_account.get('email')
     profile = kakao_account.get('profile')
     nickname = profile.get('nickname')
-    profile_img = profile.get('profile_image')
+    profile_img = profile.get('profile_image_url')
+    print(profile)
+    print(nickname)
+    print(profile_img)
     
     # Signup or Login Request
     try:
@@ -78,6 +81,9 @@ def kakao_callback(request):
             return JsonResponse({'err_msg': 'failed to signin'}, status=accept_status)
         
         accept_json = accept.json()
+        
+        User.objects.filter(email=email).update(nickname=nickname, profile_img=profile_img)
+
         return JsonResponse(accept_json)
     
     # 가입된 유저가 아닐 시 가입
@@ -93,7 +99,7 @@ def kakao_callback(request):
         accept_json = accept.json()
         
         User.objects.filter(email=email).update(nickname=nickname, profile_img=profile_img)
-        
+                
         return JsonResponse(accept_json)
 
 class KakaoLogin(SocialLoginView):
