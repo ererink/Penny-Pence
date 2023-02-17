@@ -13,11 +13,22 @@ class CustomUserDetailsSerializer(UserDetailsSerializer):
             'money'
             # 추가 예정
         )
-        read_only_fields = ('money', )
+        read_only_fields = ('email', 'money', )
 
 class UserInfo(serializers.ModelSerializer):
     user = CustomUserDetailsSerializer(read_only=True)
-    
+
     class Meta:
         model = User
         fields = '__all__'
+        read_only_fields = ('email', 'password',)
+
+    def update(self, instance, validated_data):
+        instance.nickname = validated_data.get('username', instance.nickname)
+        instance.email = validated_data.get('email', instance.email)
+        instance.password = validated_data.get('password', instance.password)
+        instance.profile_img = validated_data.get('profile_img', instance.profile_img)
+        instance.school = validated_data.get('school', instance.school)
+        instance.save()
+
+        return instance

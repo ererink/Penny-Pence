@@ -15,6 +15,7 @@ from allauth.socialaccount.providers.kakao import views as kakao_view
 from allauth.socialaccount.providers.oauth2.client import OAuth2Client
 from rest_framework.decorators import api_view
 from accounts.serializers import UserInfo
+from rest_framework.permissions import IsAuthenticated
 
 from rest_framework import serializers
 from rest_framework import authentication, viewsets
@@ -116,25 +117,25 @@ class KakaoLogin(SocialLoginView):
     
     
 class UserProfile(APIView):
+    permission_classes = [IsAuthenticated]      # 인증된 사용자만 회원 정보 수정
+    
     # 유저 정보 출력
-    def get(self, user_pk):
+    def get(self, request, user_pk):
         user = get_object_or_404(User, pk=user_pk)
         serializers = UserInfo(user)
-
         return Response(serializers.data)
     
     # 유저 정보 수정
     def put(self, request, user_pk):
         user = get_object_or_404(User, pk=user_pk)
-        
-        if user.user_pk == request.user.pk:
-            serializers = UserInfo(data=request.data, instance=user)
+        if user.pk != user_pk:
+            return Response(serializers.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        else: 
+            serializers = UserInfo(user, data=request.data)
+            
             if serializers.is_valid(raise_exception=True):              
                 serializers.save()
                 return Response(serializers.data)
             else:
                 return Response(serializers.errors, status=status.HTTP_400_BAD_REQUEST)
-        
-        else:
-            return Response("권한이 없습니다.", status=status.HTTP_403_FORBIDDEN)
-  
