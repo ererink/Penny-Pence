@@ -6,7 +6,7 @@ from rest_framework import status
 from rest_framework import viewsets
 from rest_framework.decorators import api_view
 
-from .sector_percentage import it_sector
+from .sector_percentage import *
 from collections import deque
 # Create your views here.
 
@@ -15,14 +15,12 @@ class GameDateViewSet(viewsets.ModelViewSet): # CRUD 기능 포함
     queryset = GameDate.objects.all() # 40일치
     serializer_class = GameDateSerializer 
 
-@api_view(['POST'])
+## 게임 날짜 DB삽입용 함수
 def date_create(request):
-    create_date = request.data
-    serializer = GameDateSerializer(data=create_date)
-    if serializer.is_valid():
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    for i in range(1,41):
+        GameDate.objects.create(
+            game_date = i
+        ).save()
 
 
 # 랭킹
@@ -41,20 +39,21 @@ def sector(request):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-# def save_sector(request):
-#     day_percentage = it_sector()
+## 게임 날짜 DB삽입용 함수
+def save_sector(request):
+    day_percentage = automobile_sector()
     
-#     for i in range(1, 40):
-#         day = GameDate.objects.get(id=i)
-#         percentage = day_percentage.popleft()
-#         sector = Sector.objects.create(
-#             game_date = day,
-#             sector_name = "IT",
-#             content = "IT산업",
-#             percentage = percentage
-#         )
-#         sector.save()
-# save_sector()
+    for i in range(1, 41):
+        day = GameDate.objects.get(game_date=i)
+        percentage = day_percentage.popleft()
+        print(percentage)
+        Sector.objects.create(
+            game_date = day,
+            sector_name = "자동차",
+            content = "자동차 산업",
+            percentage = percentage
+        ).save()
+
 
 
 # 뉴스
@@ -72,10 +71,12 @@ class NewsViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
-# @api_view(['POST'])
-# def create_news(request):
-#     serializer = NewsSerializer(data=request.data)
-#     if serializer.is_valid():
-#         serializer.save()
-#         return Response(serializer.data, status=status.HTTP_201_CREATED)
-#     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+@api_view(['POST'])
+def create_news(request):
+    serializer = NewsSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+## 뉴스 DB 저장

@@ -18,7 +18,7 @@ class SectorSerializer(serializers.ModelSerializer):
             'game_date',
             'sector_name',
             'content',
-            'price',
+            'percentage',
             )
 
 class NewsSerializer(serializers.ModelSerializer):
