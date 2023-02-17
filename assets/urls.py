@@ -17,8 +17,9 @@ ranking_list = RankingViewSet.as_view({
 
 urlpatterns = [
     # path('news/', news_list),
-    path('sector/', views.sector),
     path('ranking/', ranking_list),
     path('game/', views.date_create),
+    path('sector/', views.sector),
+    # path('data_input/', views.save_sector)
 ]
 

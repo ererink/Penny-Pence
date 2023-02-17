@@ -14,7 +14,7 @@ class Sector(models.Model):
     game_date = models.ForeignKey(GameDate, on_delete=models.CASCADE) # 일자
     sector_name = models.CharField(max_length=20) # title
     content = models.CharField(max_length=100) # content
-    price = models.IntegerField() # 주가
+    percentage = models.DecimalField(max_digits = 5, decimal_places = 2) # 주가
 
 class News(models.Model):
     title = models.CharField(max_length=100) # 제목
