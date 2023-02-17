@@ -16,21 +16,21 @@ class CommunityViewMixin:
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
 
-    def retrieve(self, request, *args, **kwargs):
+    def retrieve(self, request, *args, **kwargs): # 좋아요를 
         instance = self.get_object()
         serializer = self.get_serializer(instance)
         data = serializer.data
         data['like_count'] = instance.likes.count()
         return Response(data)
 
-    @action(detail=True, methods=['get'])
-    def comments(self, request, pk=None):
-        instance = self.get_object()
-        content_type = ContentType.objects.get_for_model(instance)
-        comments = Comment.objects.filter(content_type=content_type, object_id=instance.id, parent=None).prefetch_related('likes', 'replies__likes')
-        serializer = CommentSerializer(comments, many=True)
-        data = serializer.data
-        return Response(data)
+    # @action(detail=True, methods=['get']) # 나중에 글과 댓글을 따로 출력해야 할 경우 사용.
+    # def comments(self, request, pk=None):
+    #     instance = self.get_object()
+    #     content_type = ContentType.objects.get_for_model(instance)
+    #     comments = Comment.objects.filter(content_type=content_type, object_id=instance.id, parent=None).prefetch_related('likes', 'replies__likes')
+    #     serializer = CommentSerializer(comments, many=True)
+    #     data = serializer.data
+    #     return Response(data)
 
     @action(detail=True, methods=['post'])
     def like(self, request, pk=None):
@@ -56,28 +56,9 @@ class ArticleViewSet(CommunityViewMixin, viewsets.ModelViewSet):
     queryset = Article.objects.all()
     serializer_class = ArticleSerializer
         
-class CommentViewSet(viewsets.ModelViewSet):
+class CommentViewSet(CommunityViewMixin, viewsets.ModelViewSet):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
-
-    def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
-
-    @action(detail=True, methods=['post'])
-    def like(self, request, pk=None):
-        comment = self.get_object()
-        user = request.user
-        content_type = ContentType.objects.get_for_model(comment)
-        try:
-            like = Like.objects.get(content_type=content_type, object_id=comment.id, user=user)
-            like.delete()
-            like_count = comment.likes.count()
-            return Response({'detail': 'Comment unliked.', 'like_count': like_count})
-        except Like.DoesNotExist:
-            like = Like(content_object=comment, user=user)
-            like.save()
-            like_count = comment.likes.count()
-            return Response({'detail': 'Comment liked.', 'like_count': like_count})
         
     @action(detail=True, methods=['post'])
     def replies(self, request, pk=None):
@@ -94,7 +75,7 @@ class LikeViewSet(viewsets.ViewSet):
     def likes_list(self, request):
         check_list = ['question_id', 'article_id', 'comment_id']
         if not request.GET:
-            raise ValidationError('The content type and ID must be provided as query parameters. ex) question=1')
+            raise ValidationError('The content type and ID must be provided as query parameters. ex) question_id=1')
         for idx, order in enumerate(check_list):
             id = request.query_params.get(order, None)
             if id:

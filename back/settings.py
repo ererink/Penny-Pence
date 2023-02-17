@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     'accounts',
     'assets',
     'communities',
+    'auction',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
