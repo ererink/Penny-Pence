@@ -6,7 +6,7 @@ router = routers.DefaultRouter()
 router.register('question', QuestionViewSet)
 router.register('article', ArticleViewSet)
 router.register('comments', CommentViewSet)
-router.register('likes', LikeViewSet, basename='like')
+router.register('', LikeViewSet, basename='like')
 
 urlpatterns = [
     path('', include(router.urls)),

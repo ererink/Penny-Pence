@@ -21,4 +21,5 @@ urlpatterns = [
     path('accounts/', include("accounts.urls")),
     path('assets/', include('assets.urls')),
     path('communities/', include('communities.urls')),
+    path('auction/', include('auction.urls')),
 ]
