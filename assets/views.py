@@ -1,9 +1,8 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from .models import GameDate, Ranking, Sector, News
 from .serializers import GameDateSerializer, RankingSerializer, SectorSerializer, NewsSerializer
+from rest_framework import status, viewsets
 from rest_framework.response import Response
-from rest_framework import status
-from rest_framework import viewsets
 from rest_framework.decorators import api_view
 
 from .sector_percentage import *
@@ -61,6 +60,7 @@ class NewsViewSet(viewsets.ModelViewSet):
     queryset = News.objects.all()
     serializer_class = NewsSerializer
 
+    # 뉴스 리스트
     def list(self, request, *args, **kwargs):
         game_date = request.query_params.get('game_date')
         queryset = self.filter_queryset(self.get_queryset())
@@ -70,6 +70,14 @@ class NewsViewSet(viewsets.ModelViewSet):
         
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
+    
+    # detail 페이지
+    def retrieve(self, request, pk=None):
+        queryset = News.objects.all()
+        news = get_object_or_404(queryset, pk=pk)
+        serializer = NewsSerializer(news)
+        return Response(serializer.data)
+
 
 @api_view(['POST'])
 def create_news(request):
