@@ -1,4 +1,5 @@
-from django.urls import path
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
 from rest_framework.urlpatterns import format_suffix_patterns
 from .views import RankingViewSet, NewsViewSet
 from . import views
@@ -8,8 +9,11 @@ ranking_list = RankingViewSet.as_view({
     'get': 'list'
 })
 
+router = DefaultRouter()
+router.register(r'news', NewsViewSet, basename='news')
+
 urlpatterns = [
-    path('news/', views.create_news),
+    path('', include(router.urls)),
     path('ranking/', ranking_list),
     path('sector/', views.sector),
 
