@@ -19,7 +19,6 @@ def it_sector():
             for row in reader:
                 column_data.append(row[column_index])
             new_column_data = deque(list(filter(None, column_data))) # 빈 열 제거
-            new_column_data.pop() # 마지막 요소 제거
 
             for i in range(len(new_column_data)):
                 number = new_column_data.popleft()
@@ -48,7 +47,6 @@ def game_sector():
             for row in reader:
                 column_data.append(row[column_index])
             new_column_data = deque(list(filter(None, column_data))) # 빈 열 제거
-            new_column_data.pop() # 마지막 요소 제거
 
             for i in range(len(new_column_data)):
                 number = new_column_data.popleft()
@@ -79,7 +77,6 @@ def bio_sector():
             for row in reader:
                 column_data.append(row[column_index])
             new_column_data = deque(list(filter(None, column_data))) # 빈 열 제거
-            new_column_data.pop() # 마지막 요소 제거
 
             for i in range(len(new_column_data)):
                 number = new_column_data.popleft()
@@ -110,7 +107,6 @@ def sc_sector():
             for row in reader:
                 column_data.append(row[column_index])
             new_column_data = deque(list(filter(None, column_data))) # 빈 열 제거
-            new_column_data.pop() # 마지막 요소 제거
 
             for i in range(len(new_column_data)):
                 number = new_column_data.popleft()
@@ -140,7 +136,6 @@ def enter_sector():
             for row in reader:
                 column_data.append(row[column_index])
             new_column_data = deque(list(filter(None, column_data))) # 빈 열 제거
-            new_column_data.pop() # 마지막 요소 제거
 
             for i in range(len(new_column_data)):
                 number = new_column_data.popleft()
@@ -170,7 +165,6 @@ def automobile_sector():
             for row in reader:
                 column_data.append(row[column_index])
             new_column_data = deque(list(filter(None, column_data))) # 빈 열 제거
-            new_column_data.pop() # 마지막 요소 제거
 
             for i in range(len(new_column_data)):
                 number = new_column_data.popleft()
@@ -183,10 +177,10 @@ def automobile_sector():
     return automobile_AVG
 
 
-if __name__ == "__main__":
-    it_sector()
-    game_sector()
-    bio_sector()
-    sc_sector()
-    enter_sector()
-    automobile_sector()
+# if __name__ == "__main__":
+#     it_sector()
+#     game_sector()
+#     bio_sector()
+#     sc_sector()
+#     enter_sector()
+#     automobile_sector()

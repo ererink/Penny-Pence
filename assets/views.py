@@ -39,7 +39,7 @@ def sector(request):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-## 게임 날짜 DB삽입용 함수
+## 산업 정보 및 주가 DB삽입용 함수
 def save_sector(request):
     day_percentage = automobile_sector()
     
