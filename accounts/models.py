@@ -25,7 +25,7 @@ class User(AbstractUser):
    inventory = models.ManyToManyField(Item, through='User_Items')
    
    # 기능
-   followers = models.ManyToManyField('self', related_name='following', symmetrical=False)
+   followers = models.ManyToManyField('self', symmetrical=True, related_name='following')    # Ture: 양방향 관계, 일촌 개념
 
    
    objects = CustomUserManager()

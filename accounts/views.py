@@ -147,11 +147,25 @@ class Follow(APIView):
         user = get_object_or_404(User, id=user_id)
         
         if request.user == user:
-            return Response({"detail": "자기 자신을 팔로우할 수 없습니다."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"detail": "자신을 팔로우할 수 없아요!"}, status=status.HTTP_400_BAD_REQUEST)
         if request.user in user.followers.all():
-            return Response({"detail": "이미 팔로우한 유저입니다."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"detail": "이미 친구예요"}, status=status.HTTP_400_BAD_REQUEST)
         
         user.followers.add(request.user)
+        serializer = self.serializer_class(request.user)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+class Unfollow(APIView):
+    serializer_class = UserSerializer
+
+    def delete(self, request, user_id):
+        user = get_object_or_404(User, id=user_id)
+
+        if not request.user.following.filter(id=user_id).exists():
+            return Response({"detail": "친구가 아니예요"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        request.user.following.remove(user)
         serializer = self.serializer_class(request.user)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
