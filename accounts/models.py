@@ -24,6 +24,10 @@ class User(AbstractUser):
    # 아이템 
    inventory = models.ManyToManyField(Item, through='User_Items')
    
+   # 기능
+   followers = models.ManyToManyField('self', related_name='following', symmetrical=False)
+
+   
    objects = CustomUserManager()
    
    USERNAME_FIELD = 'email'

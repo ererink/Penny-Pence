@@ -12,6 +12,10 @@ urlpatterns = [
     # 프로필 페이지
     path('<int:user_pk>/profile/', views.UserProfile.as_view(), name='user_profile'),
     
+    # 팔로우
+    path('api/follow/<int:user_id>/', views.Follow.as_view(), name='follow_user'),
+
+    
     # 유저 정보 확인
     path('user_info/',views.UserViewSet.as_view({'get': 'list'})),
 ]
