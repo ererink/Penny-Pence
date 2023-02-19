@@ -139,3 +139,19 @@ class UserProfile(APIView):
                 return Response(serializers.data)
             else:
                 return Response(serializers.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class Follow(APIView):
+    serializer_class = UserSerializer
+
+    def post(self, request, user_id):
+        user = get_object_or_404(User, id=user_id)
+        
+        if request.user == user:
+            return Response({"detail": "자기 자신을 팔로우할 수 없습니다."}, status=status.HTTP_400_BAD_REQUEST)
+        if request.user in user.followers.all():
+            return Response({"detail": "이미 팔로우한 유저입니다."}, status=status.HTTP_400_BAD_REQUEST)
+        
+        user.followers.add(request.user)
+        serializer = self.serializer_class(request.user)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
