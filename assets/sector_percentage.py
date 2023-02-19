@@ -6,23 +6,25 @@ from collections import deque
 def it_sector():
     it_average = [0] * 40
     it_AVG = deque()
-    it_address = deque(["C:\\Users\\이명학\\Desktop\\주가 10년\\IT\\네이버 주가(10년).csv",
-                        "C:\\Users\\이명학\\Desktop\\주가 10년\\IT\\다우기술 주가(10년).csv", 
-                        "C:\\Users\\이명학\\Desktop\\주가 10년\\IT\\카카오 주가(10년).csv"])
 
-    while it_address:
-        with open(it_address.popleft(), 'r') as f:
-            reader = csv.reader(f)
-            header = next(reader)
-            column_index = header.index('percent')
-            column_data = []
-            for row in reader:
-                column_data.append(row[column_index])
-            new_column_data = deque(list(filter(None, column_data))) # 빈 열 제거
+    # import 에러 방지용 주석처리
+    # it_address = deque(["C:\\Users\\이명학\\Desktop\\주가 10년\\IT\\네이버 주가(10년).csv",
+    #                     "C:\\Users\\이명학\\Desktop\\주가 10년\\IT\\다우기술 주가(10년).csv", 
+    #                     "C:\\Users\\이명학\\Desktop\\주가 10년\\IT\\카카오 주가(10년).csv"])
 
-            for i in range(len(new_column_data)):
-                number = new_column_data.popleft()
-                it_average[i] += float(number)
+    # while it_address:
+    #     with open(it_address.popleft(), 'r') as f:
+    #         reader = csv.reader(f)
+    #         header = next(reader)
+    #         column_index = header.index('percent')
+    #         column_data = []
+    #         for row in reader:
+    #             column_data.append(row[column_index])
+    #         new_column_data = deque(list(filter(None, column_data))) # 빈 열 제거
+
+    #         for i in range(len(new_column_data)):
+    #             number = new_column_data.popleft()
+    #             it_average[i] += float(number)
   
     for i in it_average:
         num = round(i/3, 2)
@@ -34,23 +36,25 @@ def it_sector():
 def game_sector():
     game_average = [0] * 40
     game_AVG = deque()
-    game_address = deque(["C:\\Users\\이명학\\Desktop\\주가 10년\\게임\\엔씨소프트 주가(10년).csv",
-                          "C:\\Users\\이명학\\Desktop\\주가 10년\\게임\\위메이드 주가(10년).csv", 
-                          "C:\\Users\\이명학\\Desktop\\주가 10년\\게임\\컴투스 주가(10년).csv"])
 
-    while game_address:
-        with open(game_address.popleft(), 'r') as f:
-            reader = csv.reader(f)
-            header = next(reader)
-            column_index = header.index('percent')
-            column_data = []
-            for row in reader:
-                column_data.append(row[column_index])
-            new_column_data = deque(list(filter(None, column_data))) # 빈 열 제거
+    # import 에러 방지용 주석처리
+    # game_address = deque(["C:\\Users\\이명학\\Desktop\\주가 10년\\게임\\엔씨소프트 주가(10년).csv",
+    #                       "C:\\Users\\이명학\\Desktop\\주가 10년\\게임\\위메이드 주가(10년).csv", 
+    #                       "C:\\Users\\이명학\\Desktop\\주가 10년\\게임\\컴투스 주가(10년).csv"])
 
-            for i in range(len(new_column_data)):
-                number = new_column_data.popleft()
-                game_average[i] += float(number)
+    # while game_address:
+    #     with open(game_address.popleft(), 'r') as f:
+    #         reader = csv.reader(f)
+    #         header = next(reader)
+    #         column_index = header.index('percent')
+    #         column_data = []
+    #         for row in reader:
+    #             column_data.append(row[column_index])
+    #         new_column_data = deque(list(filter(None, column_data))) # 빈 열 제거
+
+    #         for i in range(len(new_column_data)):
+    #             number = new_column_data.popleft()
+    #             game_average[i] += float(number)
 
     for i in game_average:
         num = round(i/3, 2)
@@ -64,23 +68,25 @@ def game_sector():
 def bio_sector():
     bio_average = [0] * 40
     bio_AVG = deque()
-    bio_address = deque(["C:\\Users\\이명학\\Desktop\\주가 10년\\바이오\\셀트리온 주가(10년).csv", 
-                        "C:\\Users\\이명학\\Desktop\\주가 10년\\바이오\\신풍제약 주가(10년).csv",
-                        "C:\\Users\\이명학\\Desktop\\주가 10년\\바이오\\유한양행 주가(10년).csv"])
 
-    while bio_address:
-        with open(bio_address.popleft(), 'r') as f:
-            reader = csv.reader(f)
-            header = next(reader)
-            column_index = header.index('percent')
-            column_data = []
-            for row in reader:
-                column_data.append(row[column_index])
-            new_column_data = deque(list(filter(None, column_data))) # 빈 열 제거
+    # import 에러 방지용 주석처리
+    # bio_address = deque(["C:\\Users\\이명학\\Desktop\\주가 10년\\바이오\\셀트리온 주가(10년).csv", 
+    #                     "C:\\Users\\이명학\\Desktop\\주가 10년\\바이오\\신풍제약 주가(10년).csv",
+    #                     "C:\\Users\\이명학\\Desktop\\주가 10년\\바이오\\유한양행 주가(10년).csv"])
 
-            for i in range(len(new_column_data)):
-                number = new_column_data.popleft()
-                bio_average[i] += float(number)
+    # while bio_address:
+    #     with open(bio_address.popleft(), 'r') as f:
+    #         reader = csv.reader(f)
+    #         header = next(reader)
+    #         column_index = header.index('percent')
+    #         column_data = []
+    #         for row in reader:
+    #             column_data.append(row[column_index])
+    #         new_column_data = deque(list(filter(None, column_data))) # 빈 열 제거
+
+    #         for i in range(len(new_column_data)):
+    #             number = new_column_data.popleft()
+    #             bio_average[i] += float(number)
 
     for i in bio_average:
         num = round(i/3, 2)
@@ -94,23 +100,25 @@ def bio_sector():
 def sc_sector():
     sc_average = [0] * 40
     sc_AVG = deque()
-    sc_address = deque(["C:\\Users\\이명학\\Desktop\\주가 10년\\반도체\\LG디스플레이 주가(10년).csv", 
-                        "C:\\Users\\이명학\\Desktop\\주가 10년\\반도체\\삼성전자 주가(10년).csv",
-                        "C:\\Users\\이명학\\Desktop\\주가 10년\\반도체\\삼성전자 주가(10년).csv"])
 
-    while sc_address:
-        with open(sc_address.popleft(), 'r') as f:
-            reader = csv.reader(f)
-            header = next(reader)
-            column_index = header.index('percent')
-            column_data = []
-            for row in reader:
-                column_data.append(row[column_index])
-            new_column_data = deque(list(filter(None, column_data))) # 빈 열 제거
+    # import 에러 방지용 주석처리
+    # sc_address = deque(["C:\\Users\\이명학\\Desktop\\주가 10년\\반도체\\LG디스플레이 주가(10년).csv", 
+    #                     "C:\\Users\\이명학\\Desktop\\주가 10년\\반도체\\삼성전자 주가(10년).csv",
+    #                     "C:\\Users\\이명학\\Desktop\\주가 10년\\반도체\\삼성전자 주가(10년).csv"])
 
-            for i in range(len(new_column_data)):
-                number = new_column_data.popleft()
-                sc_average[i] += float(number)
+    # while sc_address:
+    #     with open(sc_address.popleft(), 'r') as f:
+    #         reader = csv.reader(f)
+    #         header = next(reader)
+    #         column_index = header.index('percent')
+    #         column_data = []
+    #         for row in reader:
+    #             column_data.append(row[column_index])
+    #         new_column_data = deque(list(filter(None, column_data))) # 빈 열 제거
+
+    #         for i in range(len(new_column_data)):
+    #             number = new_column_data.popleft()
+    #             sc_average[i] += float(number)
 
     for i in sc_average:
         num = round(i/3, 2)
@@ -123,23 +131,25 @@ def sc_sector():
 def enter_sector():
     enter_average = [0] * 40
     enter_AVG = deque()
-    enter_address = deque(["C:\\Users\\이명학\\Desktop\\주가 10년\\엔터\\JPY 주가(10년).csv", 
-                        "C:\\Users\\이명학\\Desktop\\주가 10년\\엔터\\SM 주가(10년).csv",
-                        "C:\\Users\\이명학\\Desktop\\주가 10년\\엔터\\YG플러스 주가(10년).csv"])
 
-    while enter_address:
-        with open(enter_address.popleft(), 'r') as f:
-            reader = csv.reader(f)
-            header = next(reader)
-            column_index = header.index('percent')
-            column_data = []
-            for row in reader:
-                column_data.append(row[column_index])
-            new_column_data = deque(list(filter(None, column_data))) # 빈 열 제거
+    # import 에러 방지용 주석처리
+    # enter_address = deque(["C:\\Users\\이명학\\Desktop\\주가 10년\\엔터\\JPY 주가(10년).csv", 
+    #                     "C:\\Users\\이명학\\Desktop\\주가 10년\\엔터\\SM 주가(10년).csv",
+    #                     "C:\\Users\\이명학\\Desktop\\주가 10년\\엔터\\YG플러스 주가(10년).csv"])
 
-            for i in range(len(new_column_data)):
-                number = new_column_data.popleft()
-                enter_average[i] += float(number)
+    # while enter_address:
+    #     with open(enter_address.popleft(), 'r') as f:
+    #         reader = csv.reader(f)
+    #         header = next(reader)
+    #         column_index = header.index('percent')
+    #         column_data = []
+    #         for row in reader:
+    #             column_data.append(row[column_index])
+    #         new_column_data = deque(list(filter(None, column_data))) # 빈 열 제거
+
+    #         for i in range(len(new_column_data)):
+    #             number = new_column_data.popleft()
+    #             enter_average[i] += float(number)
 
     for i in enter_average:
         num = round(i/3, 2)
@@ -152,23 +162,25 @@ def enter_sector():
 def automobile_sector():
     automobile_average = [0] * 40
     automobile_AVG = deque()
-    automobile_address = deque(["C:\\Users\\이명학\\Desktop\\주가 10년\\자동차\\기아차 주가(10년).csv", 
-                        "C:\\Users\\이명학\\Desktop\\주가 10년\\자동차\\현대모비스 주가(10년).csv",
-                        "C:\\Users\\이명학\\Desktop\\주가 10년\\자동차\\현대차 주가(10년).csv"])
 
-    while automobile_address:
-        with open(automobile_address.popleft(), 'r') as f:
-            reader = csv.reader(f)
-            header = next(reader)
-            column_index = header.index('percent')
-            column_data = []
-            for row in reader:
-                column_data.append(row[column_index])
-            new_column_data = deque(list(filter(None, column_data))) # 빈 열 제거
+    # import 에러 방지용 주석처리
+    # automobile_address = deque(["C:\\Users\\이명학\\Desktop\\주가 10년\\자동차\\기아차 주가(10년).csv", 
+    #                     "C:\\Users\\이명학\\Desktop\\주가 10년\\자동차\\현대모비스 주가(10년).csv",
+    #                     "C:\\Users\\이명학\\Desktop\\주가 10년\\자동차\\현대차 주가(10년).csv"])
 
-            for i in range(len(new_column_data)):
-                number = new_column_data.popleft()
-                automobile_average[i] += float(number)
+    # while automobile_address:
+    #     with open(automobile_address.popleft(), 'r') as f:
+    #         reader = csv.reader(f)
+    #         header = next(reader)
+    #         column_index = header.index('percent')
+    #         column_data = []
+    #         for row in reader:
+    #             column_data.append(row[column_index])
+    #         new_column_data = deque(list(filter(None, column_data))) # 빈 열 제거
+
+    #         for i in range(len(new_column_data)):
+    #             number = new_column_data.popleft()
+    #             automobile_average[i] += float(number)
 
     for i in automobile_average:
         num = round(i/3, 2)
@@ -177,10 +189,10 @@ def automobile_sector():
     return automobile_AVG
 
 
-# if __name__ == "__main__":
-#     it_sector()
-#     game_sector()
-#     bio_sector()
-#     sc_sector()
-#     enter_sector()
-#     automobile_sector()
+if __name__ == "__main__":
+    it_sector()
+    game_sector()
+    bio_sector()
+    sc_sector()
+    enter_sector()
+    automobile_sector()
