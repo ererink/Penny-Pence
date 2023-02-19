@@ -1,8 +1,8 @@
 from rest_framework import serializers
 from .models import Question, Comment, Like, Article
-
+from accounts.serializers import CustomUserDetailsSerializer
 class CommentSerializer(serializers.ModelSerializer):
-    user = serializers.StringRelatedField()
+    user = CustomUserDetailsSerializer()
     like_count = serializers.SerializerMethodField()
     # replies_count = serializers.SerializerMethodField() # 나중에 서버가 과부하 걸리면 댓글과 대댓글 따로 출력하기 위함.
 
@@ -18,7 +18,7 @@ class CommentSerializer(serializers.ModelSerializer):
     
 
 class QuestionSerializer(serializers.ModelSerializer):
-    # user = serializers.SerializerMethodField()
+    user = CustomUserDetailsSerializer()
     comments = CommentSerializer(many=True, read_only=True) # 위에 replies_count 와 get_replies_count 함수를 사용할 시 이 부분은 주석처리
 
     class Meta:
@@ -26,7 +26,7 @@ class QuestionSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class ArticleSerializer(serializers.ModelSerializer):
-    # user = serializers.SerializerMethodField()
+    user = CustomUserDetailsSerializer()
     comments = CommentSerializer(many=True, read_only=True)
 
     class Meta:
