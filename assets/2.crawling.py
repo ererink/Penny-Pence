@@ -23,6 +23,10 @@ def start_selenium(sectors):
     element.clear()
     element.send_keys(sectors)
 
+    # 제목 검색 클릭
+    title_click = browser.find_element(By.XPATH, '//*[@id="schoption02"]')
+    title_click.click()
+
     # 날짜 입력
     start_date = browser.find_element(By.NAME, 'stDateStart')
     start_date.clear()
@@ -47,7 +51,9 @@ def start_selenium(sectors):
     url = browser.current_url
     # url = stDateStart=2010-01-01&stDateEnd=2019-12-31&page=11 
     index = url.find("page=") # page= 뒤에 숫자를 가져오기 위해 index 저장
+
     page_range = url[index+5:] # page= 숫자 저장
+
     url = url.replace(f'{url[index:]}', '') # page 제거
 
     scrape_sector_news(url, page_range)
@@ -70,19 +76,18 @@ def scrape_sector_news(url, page_range):
     # url = "https://finance.naver.com/news/news_search.naver?rcdate=&q=%C4%AB%C4%AB%BF%C0&x=18&y=11&sm=all.basic&pd=1&stDateStart=" + DateStart + "&stDateEnd=" + DateEnd
     # url = url.replace("1997-01-01", "2010-01-01")
     # url = url.replace("2023-02-17", "2019-12-31") # 오늘날짜 기준
-    url = url.replace("all", "title") # 제목에 해당하는 것만 필터링
+
     page_range = int(page_range)
     # 기본 url
     base_url = "https://finance.naver.com/"
     if page_range > 200:
         page_range = 200
 
-    for i in range(page_range, 1, -1):
+    for i in range(page_range, 0, -1):
         
         # 최신순으로 가져오기 위해 거꾸로 탐색
         page_url = url + f'page={i}'
-        print("진행중")
-        print(url)
+        print(page_url)
         # create_soup 함수 사용
         soup = create_soup(page_url) 
 
@@ -90,27 +95,40 @@ def scrape_sector_news(url, page_range):
         news_li = soup.find_all('dl', attrs={"class":"newsList"})
 
         for news in news_li:
-          # 뉴스제목, 내용, 날짜 출력
-          title = news.find('dd', attrs={"class" : "articleSubject"}).find('a').get_text().strip()
-          content = news.find('dd', attrs={"class": "articleSummary"}).get_text().strip()
-          date = news.find('dd', attrs={"class": "articleSummary"}).find('span', attrs={"class": "wdate"}).get_text().strip()
-          link = base_url + news.find('dd', attrs={"class": "articleSubject"}).find('a')['href']
-          year_month = date[:7] # 필터 걸어줄 날짜
-          print(title)
+            # 뉴스제목, 내용, 날짜 출력
+            test_title = news.find('dd', attrs={"class" : "articleSubject"})
+            test_content = news.find('dd', attrs={"class": "articleSummary"})
+            test_date = news.find('dd', attrs={"class": "articleSummary"})
+            test_link = news.find('dd', attrs={"class": "articleSubject"})
+            
+            # None값 필터링
+            if test_title and test_content and test_date and test_link is not None:
+                title = test_title.find('a').get_text().strip()
+                content = test_content.get_text().strip()
+                date = test_date.find('span', attrs={"class": "wdate"}).get_text().strip()
+                link = base_url + test_link.find('a')['href']
+                year_month = date[:7] # 필터 걸어줄 날짜
 
-          # 중복 제목과 한 달에 두개만 뉴스내용 필터링
-          if title not in news_title_list and filter_list.count(year_month) <= 2:
-              print("들어가는 중")
-              news_title_list.append(title)
-              news_content_list.append(content)
-              news_date_list.append(date) 
-              news_link_list.append(link)
-              filter_list.append(year_month) # 2019-12
+                # 중복 제목, 거래량 뉴스 필터링 and 한 달에 한개만 가져올 수 있도록 조건문 설정
+                if (title not in news_title_list and filter_list.count(year_month) < 1 
+                    and "한국경제TV" not in content):
+
+                    news_title_list.append(title)
+                    news_content_list.append(content)
+                    news_date_list.append(date) 
+                    news_link_list.append(link)
+                    filter_list.append(year_month) # 2019-12
+            else:
+                title = "No title"
+
+            
 
 if __name__ == "__main__":
     
     # 크롤링할 기업리스트
-    queue_list = ["삼성전자 반도체", "하이닉스", 'LG디스플레이', '셀트리온', '유한양행', '신풍제약', '네이버', "카카오", '포스코ICT', "현대차", '기아', '현대모비스', 'NC소프트', '컴투스', '위메이드', 'JYP', 'YG플러스', 'SM']
+    queue_list = ["카카오", '포스코ICT', "현대차", '기아', '현대모비스', 'NC소프트', '컴투스', '위메이드', 'JYP', 'YG플러스', 'SM']
+    # 크롤링 완료
+    # ["삼성전자 반도체", "하이닉스", 'LG디스플레이', '셀트리온', '유한양행', '신풍제약', '네이버', ]
     queue = deque()
 
     for i in queue_list:
