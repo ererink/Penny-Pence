@@ -3,6 +3,7 @@ from back.settings import AUTH_USER_MODEL
 from django.contrib.auth.models import AbstractUser
 from django.utils.translation import gettext_lazy as _
 from items.models import Item
+from .managers import CustomUserManager
 
 # Create your models here.
 
@@ -23,6 +24,7 @@ class User(AbstractUser):
    # 아이템 
    inventory = models.ManyToManyField(Item, through='User_Items')
    
+   objects = CustomUserManager()
    
    USERNAME_FIELD = 'email'
    REQUIRED_FIELDS = []
