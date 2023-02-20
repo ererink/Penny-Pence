@@ -78,6 +78,41 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+CORS_ORIGIN_WHITELIST = [
+    'http://127.0.0.1:3000',
+    'http://localhost:3000',
+]
+CORS_ALLOW_CREDENTIALS = False
+
+# CORS 관련 추가
+CORS_ALLOW_METHODS = [
+    "DELETE",
+    "GET",
+    "OPTIONS",
+    "PATCH",
+    "POST",
+    "PUT",
+]
+
+CORS_ALLOW_HEADERS = (
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'access-control-request-method',
+    'access-control-request-headers',
+    'access-control-allow-origin',
+    'content-type',
+    'dnt',
+    'pragma',
+    'Expires',
+    'origin',
+    'cache-control',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+    'access-token',
+    'Refresh',
+)
 ROOT_URLCONF = 'back.urls'
 
 TEMPLATES = [

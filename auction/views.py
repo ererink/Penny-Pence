@@ -3,6 +3,7 @@ from rest_framework.response import Response
 
 from .models import AuctionItem
 from .serializers import AuctionItemSerializer
+from rest_framework.exceptions import ValidationError
 
 class AuctionItemViewSet(viewsets.ModelViewSet):
     serializer_class = AuctionItemSerializer
@@ -11,11 +12,17 @@ class AuctionItemViewSet(viewsets.ModelViewSet):
         queryset = AuctionItem.objects.all()
         item_id = self.request.query_params.get('item_id', None)
         if item_id:
-            queryset = queryset.filter(item_id=item_id)
+            queryset = queryset.filter(item_id=item_id, buyer=None)
         queryset = queryset.order_by('price')
         return queryset
     
     def create(self, request, *args, **kwargs):
+        seller = request.user
+        item_id = request.data.get('item')
+        if not seller.inventory.filter(pk=item_id).exists():
+            raise ValidationError("Seller inventory does not contain the specified item")
+        seller.inventory.remove(item_id)
+        seller.save()
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save(seller=request.user)
@@ -23,8 +30,9 @@ class AuctionItemViewSet(viewsets.ModelViewSet):
     
     def update(self, request, *args, **kwargs):
         instance = self.get_object()
-        if instance.buyer or instance.is_expired():
-            return Response({'detail': 'This auction item is no longer available.'}, status=status.HTTP_400_BAD_REQUEST)
+        # if instance.buyer or instance.is_expired(): # 나중에 판매기한을 설정하고 돌려주는 로직을 짤 때 사용
+        if instance.buyer:
+            return Response({'detail': 'This auction item has already been sold.'}, status=status.HTTP_400_BAD_REQUEST)
         if instance.seller == request.user:
             return Response({'detail': 'You cannot buy your own auction item.'}, status=status.HTTP_400_BAD_REQUEST)
         if request.user.money < instance.price:
@@ -34,8 +42,6 @@ class AuctionItemViewSet(viewsets.ModelViewSet):
     
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
-        if instance.buyer:
-            return Response({'detail': 'This auction item has already been sold.'}, status=status.HTTP_400_BAD_REQUEST)
         if instance.seller != request.user:
             return Response({'detail': 'You cannot delete this auction item.'}, status=status.HTTP_400_BAD_REQUEST)
         instance.delete()

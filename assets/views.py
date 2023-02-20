@@ -78,7 +78,7 @@ class NewsViewSet(viewsets.ModelViewSet):
         serializer = NewsSerializer(news)
         return Response(serializer.data)
 
-
+# 직접입력 test 코드
 @api_view(['POST'])
 def create_news(request):
     serializer = NewsSerializer(data=request.data)
@@ -88,3 +88,14 @@ def create_news(request):
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 ## 뉴스 DB 저장
+# def input_news():
+    
+#     for i in range(1, 41):
+#         day = GameDate.objects.get(game_date=i)
+#         sector = Sector.objects.get(sector_name="IT")
+#         News.objects.create(
+#             title = title,
+#             content = content,
+#             game_date = day,
+#             sector = sector,
+#         )
