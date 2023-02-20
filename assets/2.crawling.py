@@ -37,7 +37,7 @@ def start_selenium(sectors):
     sleep(0.5)
     end_date.clear()
     sleep(0.5)
-    end_date.send_keys('2019-12-31')
+    end_date.send_keys('2012-11-31')
 
     # 검색버튼 클릭
     search = browser.find_element(By.XPATH, '//*[@id="contentarea_left"]/form/div/div/div/input[2]')
@@ -126,9 +126,9 @@ def scrape_sector_news(url, page_range):
 if __name__ == "__main__":
     
     # 크롤링할 기업리스트
-    queue_list = ["카카오", '포스코ICT', "현대차", '기아', '현대모비스', 'NC소프트', '컴투스', '위메이드', 'JYP', 'YG플러스', 'SM']
+    queue_list = []
     # 크롤링 완료
-    # ["삼성전자 반도체", "하이닉스", 'LG디스플레이', '셀트리온', '유한양행', '신풍제약', '네이버', ]
+    # ["삼성전자 반도체", "하이닉스", 'LG디스플레이', '셀트리온', '유한양행', '신풍제약', '네이버', "카카오", '다우기술', '포스코ICT', "현대차", '기아', '현대모비스', '엔씨소프트', '컴투스', '위메이드', '제이와이피', 'YG', '에스엠' ]
     queue = deque()
 
     for i in queue_list:

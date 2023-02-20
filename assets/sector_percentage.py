@@ -88,11 +88,11 @@ def bio_sector():
     #             number = new_column_data.popleft()
     #             bio_average[i] += float(number)
 
-    for i in bio_average:
-        num = round(i/3, 2)
-        bio_AVG.append(num)
-    print(bio_AVG)
-    return bio_AVG
+    # for i in bio_average:
+    #     num = round(i/3, 2)
+    #     bio_AVG.append(num)
+    # print(bio_AVG)
+    # return bio_AVG
 
 
 
@@ -182,11 +182,11 @@ def automobile_sector():
     #             number = new_column_data.popleft()
     #             automobile_average[i] += float(number)
 
-    for i in automobile_average:
-        num = round(i/3, 2)
-        automobile_AVG.append(num)
-    print(automobile_AVG)
-    return automobile_AVG
+    # for i in automobile_average:
+    #     num = round(i/3, 2)
+    #     automobile_AVG.append(num)
+    # print(automobile_AVG)
+    # return automobile_AVG
 
 
 if __name__ == "__main__":
