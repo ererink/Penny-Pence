@@ -14,11 +14,13 @@ from dj_rest_auth.registration.views import SocialLoginView
 from allauth.socialaccount.providers.kakao import views as kakao_view
 from allauth.socialaccount.providers.oauth2.client import OAuth2Client
 from rest_framework.decorators import api_view
-from accounts.serializers import UserInfo
+from accounts.serializers import UserInfo, SchoolSerializer
 from rest_framework.permissions import IsAuthenticated
 
 from rest_framework import serializers
 from rest_framework import authentication, viewsets
+
+from Neis_API import Region, School
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -87,7 +89,7 @@ def kakao_callback(request):
             return JsonResponse({'err_msg': 'failed to signin'}, status=accept_status)
         
         accept_json = accept.json()
-        
+
         # 사용자 정보 저장
         User.objects.filter(email=email).update(nickname=nickname, profile_img=profile_img)
 
@@ -104,7 +106,7 @@ def kakao_callback(request):
         
         # 사용자의 pk, email, first name, last name과 Access Token, Refresh token 가져오기
         accept_json = accept.json()
-        
+        print(accept_json)
         # 사용자 카카오 정보 저장 (이름, 프로필 사진)
         User.objects.filter(email=email).update(nickname=nickname, profile_img=profile_img)
                 
@@ -169,3 +171,43 @@ class Unfollow(APIView):
         serializer = self.serializer_class(request.user)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+class SearchSchool(APIView):
+    serializer_class = SchoolSerializer
+        
+    def get(self, request):
+        api_key = env.NEIS_API_KEY
+        query = request.GET.get('query')    # 검색어 입력
+        if not query:
+            return Response({'error': '검색어가 없어요'}, status=status.HTTP_400_BAD_REQUEST)
+
+        response = requests.get(f'https://open.neis.go.kr/hub/schoolInfo?KEY={api_key}&Type=json&pIndex=1&pSize=100&SCHUL_NM=한내초등학교')
+        data = response.json()
+        # print(data)
+        '''
+        data 출력 형태
+        {'schoolInfo': [{'head': [{'list_total_count': 1}, {'RESULT': {'CODE': 'INFO-000', 'MESSAGE': '정상 처리되었습니다.'}}]}, 
+        {'row': [{'ATPT_OFCDC_SC_CODE': 'B10', 'ATPT_OFCDC_SC_NM': '서울특별시교육청', 'SD_SCHUL_CODE': '7021098', 'SCHUL_NM': '서울신내초등학교', 'ENG_SCHUL_NM': 'SEOUL SINNE ELEMENTARY SCHOOL', 'SCHUL_KND_SC_NM': '초등학교', 'LCTN_SC_NM': '서울특별시', 'JU_ORG_NM': '서울특별시동부교육지원청', 'FOND_SC_NM': '공립', 'ORG_RDNZC': '02071 ', 'ORG_RDNMA': '서울특별시 중랑구 용마산로125나길 22', 'ORG_RDNDA': '(신내동/신내초등학교)', 'ORG_TELNO': '02-2207-0501', 'HMPG_ADRES': 'http://www.sinne.es.kr', 'COEDU_SC_NM': '남여공학', 'ORG_FAXNO': '02-2207-0504', 'HS_SC_NM': None, 'INDST_SPECL_CCCCL_EXST_YN': 'N', 'HS_GNRL_BUSNS_SC_NM': '일반계', 'SPCLY_PURPS_HS_ORD_NM': None, 'ENE_BFE_SEHF_SC_NM': '전기', 'DGHT_SC_NM': '주간', 'FOND_YMD': '19940105', 'FOAS_MEMRD': '19940506', 'LOAD_DTM': '20230219'}]}]}
+        '''
+        
+        school_name = data['schoolInfo'][1]['row'][0]['SCHUL_NM']
+        # print(school_name)
+        
+        if not school_name:
+            return Response({'message': '검색어를 찾을 수 없어요!'}, status=status.HTTP_404_NOT_FOUND)
+        else:
+            user = request.user
+            serializer = self.serializer_class([{'school_name': school_name}], many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+    # 유저 모델에 저장
+    def post(self, request):
+        user = get_object_or_404(User, id=request.user.id)
+        school_name = request.data.get('school_name')
+        
+        # 학교 이름 저장
+        user.school = school_name
+        user.save()
+
+        serializer = UserInfo(user)
+        return Response(serializer.data)
