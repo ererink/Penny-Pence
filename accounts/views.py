@@ -111,7 +111,7 @@ def kakao_callback(request):
             'refresh_token': refresh_token,
             'accept_json': accept_json,             
         }
-        print(data)
+        # print(data)
         serializer = KakaoLoginSerializer(data)
         
         return JsonResponse(serializer.data)
@@ -136,9 +136,10 @@ def kakao_callback(request):
             'nickname': nickname,
             'profile_img': profile_img,
             'access_token': access_token,
-            'refresh_token': refresh_token,            
+            'refresh_token': refresh_token,
+            'accept_json': accept_json,             
         }
-        print(data)
+        # print(data)
         serializer = KakaoLoginSerializer(data)
 
         return JsonResponse(serializer.data)
