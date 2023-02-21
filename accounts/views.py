@@ -102,7 +102,7 @@ def kakao_callback(request):
         # print(accept_json)
 
         # 사용자 정보 저장
-        User.objects.filter(email=email).update(nickname=nickname, profile_img=profile_img)
+        User.objects.filter(email=email).update(nickname=nickname, profile_img=profile_img, refresh_token=refresh_token)
 
         data = {
             'nickname': nickname,
@@ -130,7 +130,7 @@ def kakao_callback(request):
         accept_json = accept.json()
 
         # 사용자 카카오 정보 저장 (이름, 프로필 사진)
-        User.objects.filter(email=email).update(nickname=nickname, profile_img=profile_img)
+        User.objects.filter(email=email).update(nickname=nickname, profile_img=profile_img, refresh_token=refresh_token)
         
         data = {
             'nickname': nickname,
