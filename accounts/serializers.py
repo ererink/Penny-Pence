@@ -15,6 +15,12 @@ class CustomUserDetailsSerializer(UserDetailsSerializer):
         )
         read_only_fields = ('email', 'money', )
 
+class KakaoLoginSerializer(serializers.Serializer):
+    nickname = serializers.CharField()
+    profile_img = serializers.URLField()
+    access_token = serializers.CharField()
+    refresh_token = serializers.CharField()
+
 class SchoolSerializer(serializers.Serializer):
     school_name = serializers.CharField()
     
@@ -36,11 +42,3 @@ class UserInfo(serializers.ModelSerializer):
 
         return instance
 
-# class SchoolSerializer(serializers.Serializer):
-#     school_name = serializers.CharField(source='data["schoolInfo"][1]["row"][0]["SCHUL_NM"]')
-#     school_type = serializers.CharField(source='data["schoolInfo"][1]["row"][0]["SCHUL_KND_SC_NM"]')
-
-#     class Meta:
-#         model = User
-#         fields = ('id', 'school_name', 'school_type')
-#         read_only_fields = ('email', 'password', 'followers', )
