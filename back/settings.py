@@ -228,3 +228,6 @@ SIMPLE_JWT = {
 
 # 학교 알리미 API
 ALIMI_API_KEY = env.ALIMI_API_KEY
+
+# 학교 검색을 위한 나이스 API
+NEIS_API_KEY = env.NEIS_API_KEY

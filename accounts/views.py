@@ -14,7 +14,7 @@ from dj_rest_auth.registration.views import SocialLoginView
 from allauth.socialaccount.providers.kakao import views as kakao_view
 from allauth.socialaccount.providers.oauth2.client import OAuth2Client
 from rest_framework.decorators import api_view
-from accounts.serializers import UserInfo, SchoolSerializer
+from accounts.serializers import UserInfo, SchoolSerializer, KakaoLoginSerializer
 from rest_framework.permissions import IsAuthenticated
 
 from rest_framework import serializers
@@ -50,27 +50,37 @@ def kakao_callback(request):
     # Access Token Request
     token_req = requests.get(f"https://kauth.kakao.com/oauth/token?grant_type=authorization_code&client_id={rest_api_key}&redirect_uri={redirect_uri}&code={code}")
     token_req_json = token_req.json()       # json으로 변환
+    
+    '''
+    print(token_req_json)
+    
+    {'access_token': '...', 
+    'token_type': 'bearer', 'refresh_token': '...', 
+    'expires_in': 00000, 'scope': 'age_range birthday account_email profile_image gender profile_nickname', 
+    'refresh_token_expires_in': 0000000}
+    '''
     error = token_req_json.get('error')     # 에러 부분 파싱
     
     if error is not None:
         raise JSONDecodeError(error)
     
     access_token = token_req_json.get("access_token")
+    refresh_token = token_req_json.get("refresh_token")
 
     # Email Request
     profile_request = requests.get("https://kapi.kakao.com/v2/user/me", headers={"Authorization": f"Bearer {access_token}"})
     profile_json = profile_request.json()
     kakao_account = profile_json.get('kakao_account')
-    
     # print(kakao_account) 
-    # => 이메일, 프로필 사진, 배경 사진 url 가져올 수 있음
+    
+    # 이메일, 프로필 사진, 배경 사진 url 가져오기
     email = kakao_account.get('email')
     profile = kakao_account.get('profile')
     nickname = profile.get('nickname')
     profile_img = profile.get('profile_image_url')
-    print(profile)
-    print(nickname)
-    print(profile_img)
+    # print(profile)
+    # print(nickname)
+    # print(profile_img)
     
     # Signup or Login Request
     try:
@@ -89,12 +99,24 @@ def kakao_callback(request):
             return JsonResponse({'err_msg': 'failed to signin'}, status=accept_status)
         
         accept_json = accept.json()
+        # print(accept_json)
 
         # 사용자 정보 저장
         User.objects.filter(email=email).update(nickname=nickname, profile_img=profile_img)
 
-        return JsonResponse(accept_json)
-    
+        data = {
+            'nickname': nickname,
+            'profile_img': profile_img,
+            'access_token': access_token,
+            'refresh_token': refresh_token,
+            'accept_json': accept_json,             
+        }
+        print(data)
+        serializer = KakaoLoginSerializer(data)
+        
+        return JsonResponse(serializer.data)
+        # return Response(serializer.data, status=status.HTTP_200_OK)
+        
     # 가입된 유저가 아닐 시 가입
     except User.DoesNotExist:
         data = {'access_token': access_token, 'code': code}
@@ -106,11 +128,22 @@ def kakao_callback(request):
         
         # 사용자의 pk, email, first name, last name과 Access Token, Refresh token 가져오기
         accept_json = accept.json()
-        print(accept_json)
+
         # 사용자 카카오 정보 저장 (이름, 프로필 사진)
         User.objects.filter(email=email).update(nickname=nickname, profile_img=profile_img)
-                
-        return JsonResponse(accept_json)
+        
+        data = {
+            'nickname': nickname,
+            'profile_img': profile_img,
+            'access_token': access_token,
+            'refresh_token': refresh_token,            
+        }
+        print(data)
+        serializer = KakaoLoginSerializer(data)
+
+        return JsonResponse(serializer.data)
+        # return Response(serializer.data, status=status.HTTP_200_OK)
+
 
 class KakaoLogin(SocialLoginView):
     adapter_class = kakao_view.KakaoOAuth2Adapter
