@@ -19,6 +19,10 @@ urlpatterns = [
     # 학교 검색
     path('search_school/', views.SearchSchool.as_view(), name='search_school'),
     
+    # 닉네임 중복확인
+    path('<int:user_id>/uniquecheck/nickname', views.NicknameUniqueCheck.as_view(), name='uniquecheck_nickname'),
+    
     # 유저 정보 확인
     path('user_info/',views.UserViewSet.as_view({'get': 'list'})),
+    
 ]
