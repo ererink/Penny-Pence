@@ -20,7 +20,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework import serializers
 from rest_framework import authentication, viewsets
 
-from Neis_API import Region, School
+# from Neis_API import Region, School
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -44,7 +44,7 @@ def kakao_login(request):
 def kakao_callback(request):
     rest_api_key = env.KAKAO_REST_API_KEY
     code = request.GET.get('code')
-    redirect_uri = KAKAO_CALLBACK_URI
+    redirect_uri = 'http://localhost:3000/oauth/kakao/callback/'
     # redirect_uri = "https://master.d3n2xysrd0lvj9.amplifyapp.com/oauth/callback/kakao"
     
     # Access Token Request
@@ -99,7 +99,7 @@ def kakao_callback(request):
             return JsonResponse({'err_msg': 'failed to signin'}, status=accept_status)
         
         accept_json = accept.json()
-        # print(accept_json)
+        print(accept_json)
 
         # 사용자 정보 저장
         User.objects.filter(email=email).update(nickname=nickname, profile_img=profile_img, refresh_token=refresh_token)
@@ -114,7 +114,7 @@ def kakao_callback(request):
         # print(data)
         serializer = KakaoLoginSerializer(data)
         
-        return JsonResponse(serializer.data)
+        return JsonResponse(accept_json)
         # return Response(serializer.data, status=status.HTTP_200_OK)
         
     # 가입된 유저가 아닐 시 가입
@@ -142,7 +142,7 @@ def kakao_callback(request):
         # print(data)
         serializer = KakaoLoginSerializer(data)
 
-        return JsonResponse(serializer.data)
+        return JsonResponse(accept_json)
         # return Response(serializer.data, status=status.HTTP_200_OK)
 
 
