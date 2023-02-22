@@ -20,7 +20,6 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework import serializers
 from rest_framework import authentication, viewsets
 
-from Neis_API import Region, School
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
