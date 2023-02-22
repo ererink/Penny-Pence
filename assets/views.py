@@ -1,13 +1,11 @@
 from django.shortcuts import render, get_object_or_404
 from .models import GameDate, Ranking, Sector, News
+from django.db.models import Sum
 from .serializers import GameDateSerializer, RankingSerializer, SectorSerializer, NewsSerializer
-from rest_framework import status, viewsets
+from rest_framework import status, viewsets, permissions
 from rest_framework.response import Response
-from rest_framework.decorators import api_view
-
+from rest_framework.decorators import api_view, action
 from .sector_percentage import *
-from collections import deque
-# Create your views here.
 
 # 게임일자
 class GameDateViewSet(viewsets.ModelViewSet): # CRUD 기능 포함
@@ -23,10 +21,31 @@ def date_create(request):
 
 
 # 랭킹
-class RankingViewSet(viewsets.ModelViewSet):
-    queryset = Ranking.objects.all()
-    serializer_class = RankingSerializer
+class RankingViewSet(viewsets.ViewSet):
+    # 인증된 사용자만 접근 가능하도록
+    permission_classes = [permissions.IsAuthenticated]
 
+    @action(detail=True, methods=['GET'])
+    def get_ranking_by_game_date(self, request, pk=None):
+        # game_date_id 에 해당하는 게임 날짜 데이터를 가져옴
+        game_date = get_object_or_404(GameDate, pk=pk)
+        ranking_user = request.user
+
+        # 이미 DB에 user가 저장되어 있다면 리스트 출력
+        if Ranking.objects.filter(user_id=ranking_user.pk) and Ranking.objects.filter(game_date=game_date):
+            rankings = Ranking.objects.filter(game_date=game_date).order_by('money')
+        
+        else:
+            rankings = Ranking.objects.create(
+                game_date = game_date,
+                money = ranking_user.money,
+                user_id = ranking_user.pk
+                ).save()
+        
+        # Serializer를 통해 데이터 직렬화
+        serializer = RankingSerializer(rankings, many=True)
+        # Response를 통해 직렬화된 데이터 반환
+        return Response(serializer.data)
 
 # 산업
 @api_view(['POST'])

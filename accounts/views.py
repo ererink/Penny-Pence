@@ -14,13 +14,11 @@ from dj_rest_auth.registration.views import SocialLoginView
 from allauth.socialaccount.providers.kakao import views as kakao_view
 from allauth.socialaccount.providers.oauth2.client import OAuth2Client
 from rest_framework.decorators import api_view
-from accounts.serializers import UserInfo, SchoolSerializer, KakaoLoginSerializer
+from accounts.serializers import UserInfo, SchoolSerializer, KakaoLoginSerializer, NicknameUniqueCheckSerializer
 from rest_framework.permissions import IsAuthenticated
 
 from rest_framework import serializers
 from rest_framework import authentication, viewsets
-
-# from Neis_API import Region, School
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -65,7 +63,6 @@ def kakao_callback(request):
         raise JSONDecodeError(error)
     
     access_token = token_req_json.get("access_token")
-    refresh_token = token_req_json.get("refresh_token")
 
     # Email Request
     profile_request = requests.get("https://kapi.kakao.com/v2/user/me", headers={"Authorization": f"Bearer {access_token}"})
@@ -102,13 +99,12 @@ def kakao_callback(request):
         print(accept_json)
 
         # 사용자 정보 저장
-        User.objects.filter(email=email).update(nickname=nickname, profile_img=profile_img, refresh_token=refresh_token)
+        User.objects.filter(email=email).update(nickname=nickname, profile_img=profile_img)
 
         data = {
             'nickname': nickname,
             'profile_img': profile_img,
             'access_token': access_token,
-            'refresh_token': refresh_token,
             'accept_json': accept_json,             
         }
         # print(data)
@@ -130,13 +126,12 @@ def kakao_callback(request):
         accept_json = accept.json()
 
         # 사용자 카카오 정보 저장 (이름, 프로필 사진)
-        User.objects.filter(email=email).update(nickname=nickname, profile_img=profile_img, refresh_token=refresh_token)
+        User.objects.filter(email=email).update(nickname=nickname, profile_img=profile_img)
         
         data = {
             'nickname': nickname,
             'profile_img': profile_img,
             'access_token': access_token,
-            'refresh_token': refresh_token,
             'accept_json': accept_json,             
         }
         # print(data)
@@ -175,6 +170,24 @@ class UserProfile(APIView):
                 return Response(serializers.data)
             else:
                 return Response(serializers.errors, status=status.HTTP_400_BAD_REQUEST)
+           
+# 닉네임 중복확인            
+class NicknameUniqueCheck(APIView):
+    serializer_class = NicknameUniqueCheckSerializer
+    
+    def post(self, request, user_id):
+        user = get_object_or_404(User, id=user_id)
+        
+        if request.user == user:
+
+            serializer = self.serializer_class(data=request.data, context={'request': request})
+        
+            if serializer.is_valid():
+                return Response(data={'detail':['사용할 수 있어요.']}, status=status.HTTP_200_OK)
+            
+            else:
+                return Response(data={'detail':['이미 사용 중인 닉네임이에요!']}, status=status.HTTP_400_BAD_REQUEST)
+
 
 class Follow(APIView):
     serializer_class = UserSerializer
@@ -183,7 +196,7 @@ class Follow(APIView):
         user = get_object_or_404(User, id=user_id)
         
         if request.user == user:
-            return Response({"detail": "자신을 팔로우할 수 없아요!"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"detail": "자신을 팔로우할 수 없어요!"}, status=status.HTTP_400_BAD_REQUEST)
         if request.user in user.followers.all():
             return Response({"detail": "이미 친구예요"}, status=status.HTTP_400_BAD_REQUEST)
         

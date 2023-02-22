@@ -5,17 +5,13 @@ from .views import RankingViewSet, NewsViewSet
 from . import views
 
 
-ranking_list = RankingViewSet.as_view({
-    'get': 'list'
-})
-
 router = DefaultRouter()
-router.register(r'news', NewsViewSet, basename='news')
+router.register('news', NewsViewSet)
+# router.register('ranking', RankingViewSet, basename='ranking')
 
 urlpatterns = [
     path('', include(router.urls)),
-    path('ranking/', ranking_list),
-    path('sector/', views.sector),
+    path('ranking/game-date/<int:pk>/', RankingViewSet.as_view({'get': 'get_ranking_by_game_date'}), name='ranking-game-date')
 
     # DB 저장용[사용안하는 주소]
     # path('game/', views.date_create),

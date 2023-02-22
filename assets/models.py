@@ -1,5 +1,6 @@
 from django.db import models
-# from back.settings import AUTH_USER_MODEL
+from back.settings import AUTH_USER_MODEL
+from django.conf import settings
 
 # Create your models here.
 class GameDate(models.Model):
@@ -8,7 +9,7 @@ class GameDate(models.Model):
 class Ranking(models.Model):
     game_date = models.ForeignKey(GameDate, on_delete=models.CASCADE) # 일차
     money = models.IntegerField() #자산
-    # user = models.ForeignKey(AUTH_USER_MODEL, on_delete=models.CASCADE) # 닉네임 끌고오기
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE) # 닉네임 끌고오기
     
 class Sector(models.Model):
     game_date = models.ForeignKey(GameDate, on_delete=models.CASCADE) # 일자
