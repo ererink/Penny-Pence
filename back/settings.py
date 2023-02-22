@@ -186,6 +186,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 KAKAO_REST_API_KEY = env.KAKAO_REST_API_KEY
 SOCIAL_AUTH_KAKAO_SECRET = env.SOCIAL_AUTH_KAKAO_SECRET
 
+
 # rest framework
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
@@ -225,6 +226,14 @@ SIMPLE_JWT = {
     'ROTATE_REFRESH_TOKENS': False,
     'BLACKLIST_AFTER_ROTATION': True,
 }
+
+REST_AUTH_REGISTER_SERIALIZERS = {
+    "REGISTER_SERIALIZER": "accounts.serializers.CustomUserDetailsSerializer"
+}  # 유저 회원가입
+
+REST_AUTH_SERIALIZERS = {
+    "USER_DETAILS_SERIALIZER": "accounts.serializers.CustomUserDetailsSerializer",
+} # SocialLoginView 사용때 만든 serializers.py로 변경
 
 # 학교 알리미 API
 ALIMI_API_KEY = env.ALIMI_API_KEY
