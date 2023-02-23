@@ -3,6 +3,7 @@ from back.settings import AUTH_USER_MODEL
 from django.contrib.auth.models import AbstractUser
 from django.utils.translation import gettext_lazy as _
 from items.models import Item
+from assets.models import GameDate, Sector
 from .managers import CustomUserManager
 
 # Create your models here.
@@ -33,13 +34,13 @@ class User(AbstractUser):
    USERNAME_FIELD = 'email'
    REQUIRED_FIELDS = []
 
-   # 매수목록 ManyToManyField 확장
-# class User_Positions(models.Model):
-#    user = models.ForeignKey(User, on_delete=models.CASCADE)
-#    position = models.ForeignKey(Sectors, on_delete=models.CASCADE)
-#    day = models.ForeignKey(Days, on_delete=models.CASCADE)
-#    total = models.IntegerField(default=0)
-#    volume = models.IntegerField(default=0)
+# 매수목록 ManyToManyField 확장
+class User_Positions(models.Model):
+   user = models.ForeignKey(User, on_delete=models.CASCADE)
+   position = models.ForeignKey(Sector, on_delete=models.CASCADE)
+   day = models.ForeignKey(GameDate, on_delete=models.CASCADE)
+   total = models.IntegerField(default=0)
+   volume = models.IntegerField(default=0)
 
 # 아이템목록(inventory) ManyToManyField 확장
 class User_Items(models.Model):

@@ -1,11 +1,18 @@
 from django.shortcuts import render, get_object_or_404
 from .models import GameDate, Ranking, Sector, News
-from django.db.models import Sum
 from .serializers import GameDateSerializer, RankingSerializer, SectorSerializer, NewsSerializer
 from rest_framework import status, viewsets, permissions
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, action
 from .sector_percentage import *
+
+# accounts 앱
+from django.contrib.auth import get_user_model
+from accounts.models import User_Positions
+
+# 스케줄러
+import schedule
+import time
 
 # 게임일자
 class GameDateViewSet(viewsets.ModelViewSet): # CRUD 기능 포함
@@ -46,6 +53,32 @@ class RankingViewSet(viewsets.ViewSet):
         serializer = RankingSerializer(rankings, many=True)
         # Response를 통해 직렬화된 데이터 반환
         return Response(serializer.data)
+
+# 오전 6시에 함수 실행
+# 입력값을 조절해서 테스트 해봐야할 듯
+schedule.every().day.at("06:00").do(RankingViewSet)
+while True:
+    schedule.run_pending()
+    time.sleep(1)
+    break
+
+# 자동매도
+def sell_user_position():
+    User = get_user_model()
+    users = User.objects.all()
+
+    users_positions = User_Positions.objects.all()
+    # print(users_positions)
+    for user_position in users_positions:
+        if User.objects.get(pk=user_position.pk):
+            user_update = User.objects.get(pk=user_position.pk)
+            user_update.money *= user_position.position.percentage # 퍼센티지
+            # 데이테이블도 += 1
+            user_update.save()
+        else:
+            print("error")
+
+# sell_user_position()
 
 # 산업
 @api_view(['POST'])

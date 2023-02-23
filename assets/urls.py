@@ -11,7 +11,8 @@ router.register('news', NewsViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),
-    path('ranking/game-date/<int:pk>/', RankingViewSet.as_view({'get': 'get_ranking_by_game_date'}), name='ranking-game-date')
+    path('ranking/<int:pk>/', RankingViewSet.as_view({'get': 'get_ranking_by_game_date'}), name='ranking-game-date')
+    
 
     # DB 저장용[사용안하는 주소]
     # path('game/', views.date_create),
