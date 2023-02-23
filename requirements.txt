@@ -12,8 +12,10 @@ defusedxml==0.7.1
 dj-rest-auth==2.2.5
 Django==3.2.13
 django-allauth==0.52.0
+django-appconf==1.0.5
 django-cors-headers==3.13.0
 django-filter==22.1
+django-imagekit==4.1.0
 django-rest-auth==0.9.5
 djangorestframework==3.14.0
 djangorestframework-simplejwt==5.2.2
@@ -23,11 +25,14 @@ h11==0.14.0
 idna==3.4
 lxml==4.9.2
 mysqlclient==2.1.1
+Neis-API==0.6.0
 numpy==1.24.2
 oauthlib==3.2.2
 openpyxl==3.1.1
 outcome==1.2.0
 pandas==1.5.3
+pilkit==2.0
+Pillow==9.4.0
 pycparser==2.21
 PyJWT==2.6.0
 PySocks==1.7.1
@@ -39,6 +44,7 @@ requests-oauthlib==1.3.1
 selenium==4.8.0
 six==1.16.0
 sniffio==1.3.0
+sorl-thumbnail==12.9.0
 sortedcontainers==2.4.0
 soupsieve==2.3.2.post1
 sqlparse==0.4.3
