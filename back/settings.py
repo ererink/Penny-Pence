@@ -65,6 +65,10 @@ INSTALLED_APPS = [
 
     # CORS -> 프론트와 연결
     'corsheaders',
+    
+    # 이미지 프로세서
+    'imagekit',
+    'sorl.thumbnail',
 ]
 
 MIDDLEWARE = [
@@ -240,3 +244,8 @@ ALIMI_API_KEY = env.ALIMI_API_KEY
 
 # 학교 검색을 위한 나이스 API
 NEIS_API_KEY = env.NEIS_API_KEY
+
+
+# Media files (user uploaded filed)
+MEDIA_ROOT = BASE_DIR / 'images'
+MEDIA_URL = '/media/'
