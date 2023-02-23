@@ -20,6 +20,10 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework import serializers
 from rest_framework import authentication, viewsets
 
+import os
+from imagekit import ImageSpec, register
+from imagekit.processors import ResizeToFill
+from sorl.thumbnail import get_thumbnail
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -43,7 +47,7 @@ def kakao_login(request):
 def kakao_callback(request):
     rest_api_key = env.KAKAO_REST_API_KEY
     code = request.GET.get('code')
-    redirect_uri = KAKAO_CALLBACK_URI
+    redirect_uri = 'http://localhost:3000/oauth/kakao/callback/'
     # redirect_uri = "https://master.d3n2xysrd0lvj9.amplifyapp.com/oauth/callback/kakao"
     
     # Access Token Request
@@ -97,7 +101,7 @@ def kakao_callback(request):
             return JsonResponse({'err_msg': 'failed to signin'}, status=accept_status)
         
         accept_json = accept.json()
-        # print(accept_json)
+        print(accept_json)
 
         # 사용자 정보 저장
         User.objects.filter(email=email).update(nickname=nickname, profile_img=profile_img)
@@ -111,7 +115,7 @@ def kakao_callback(request):
         # print(data)
         serializer = KakaoLoginSerializer(data)
         
-        return JsonResponse(serializer.data)
+        return JsonResponse(accept_json)
         # return Response(serializer.data, status=status.HTTP_200_OK)
         
     # 가입된 유저가 아닐 시 가입
@@ -138,7 +142,7 @@ def kakao_callback(request):
         # print(data)
         serializer = KakaoLoginSerializer(data)
 
-        return JsonResponse(serializer.data)
+        return JsonResponse(accept_json)
         # return Response(serializer.data, status=status.HTTP_200_OK)
 
 
@@ -147,7 +151,7 @@ class KakaoLogin(SocialLoginView):
     client_class = OAuth2Client
     callback_url = KAKAO_CALLBACK_URI
     
-    
+ 
 class UserProfile(APIView):
     permission_classes = [IsAuthenticated]      # 인증된 사용자만 회원 정보 수정
     
@@ -162,7 +166,7 @@ class UserProfile(APIView):
         user = get_object_or_404(User, pk=user_pk)
         if user.pk != user_pk:
             return Response(serializers.errors, status=status.HTTP_400_BAD_REQUEST)
-
+        
         else: 
             serializers = UserInfo(user, data=request.data)
             
@@ -171,7 +175,66 @@ class UserProfile(APIView):
                 return Response(serializers.data)
             else:
                 return Response(serializers.errors, status=status.HTTP_400_BAD_REQUEST)
-           
+ 
+ # 프로필 이미지 업데이트
+class ProfileImageUpdater(APIView):
+    def get(self, request, user_id):
+        user = get_object_or_404(User, pk=user_id)
+        user_img = user.profile_img or user.edited_img
+        serializers = UserInfo(user)
+        return Response(serializers.data)
+    
+    def put(self, request, user_id, image):
+        user = User.objects.get(id=user_id)
+        
+        # 카카오 프로필 이미지나 수정된 이미지 할당
+        img_field = user.profile_img or user.edited_img
+        
+        if img_field:
+            # 이미지 파일 삭제
+            img_field.delete()
+
+            # 이미지 캐시 삭제
+            cache_name = img_field_400.cache_name
+            cache_backend = img_field_400.cache_backend
+            cache_backend.delete(cache_name)
+
+            # DB에 저장된 이미지 경로 및 캐시 정보 삭제
+            if user.profile_img == img_field:
+                user.profile_img = None
+                user.profile_img_400 = None
+                img_field_400 = user.profile_img_400
+            else:
+                user.edited_img = None
+                user.edited_img_400 = None
+                img_field_400 = user.edited_img_400
+
+            # 이미지 저장 => 수정된 이미지는 edited_img에 저장
+            image_name, ext = os.path.splitext(image.name)
+            image_name = f"{user.username}-profile-image{ext}"
+            user.edited_img.save(image_name, image)
+
+            # 이미지 프로세싱 작업 수행
+            profile_image_400 = get_thumbnail(user.edited_img, '400x400', crop='center', quality=80)
+            profile_image_400_name = f"{user.username}-profile-image-400{ext}"
+            img_field_400.save(profile_image_400_name, profile_image_400)
+
+            user.save()
+        serializers = UserInfo(user, data=request.data)
+
+        if serializers.is_valid(raise_exception=True): 
+            # 이미지 파일이 있으면, 이미지 처리 후 저장
+            if 'profile_img' in request.FILES:
+                updater = ProfileImageUpdater()
+                updater.update_profile_image(user, request.FILES['profile_img'])
+            
+            elif 'edited_img' in request.FILES:
+                updater = ProfileImageUpdater()
+                updater.update_profile_image(user, request.FILES['edited_img'])
+                                                        
+            serializers.save()
+            return Response(serializers.data)
+                   
 # 닉네임 중복확인            
 class NicknameUniqueCheck(APIView):
     serializer_class = NicknameUniqueCheckSerializer

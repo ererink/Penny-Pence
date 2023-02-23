@@ -23,15 +23,6 @@ class CommunityViewMixin:
         data['like_count'] = instance.likes.count()
         return Response(data)
 
-    # @action(detail=True, methods=['get']) # 나중에 글과 댓글을 따로 출력해야 할 경우 사용.
-    # def comments(self, request, pk=None):
-    #     instance = self.get_object()
-    #     content_type = ContentType.objects.get_for_model(instance)
-    #     comments = Comment.objects.filter(content_type=content_type, object_id=instance.id, parent=None).prefetch_related('likes', 'replies__likes')
-    #     serializer = CommentSerializer(comments, many=True)
-    #     data = serializer.data
-    #     return Response(data)
-
     @action(detail=True, methods=['post'])
     def like(self, request, pk=None):
         instance = self.get_object()
@@ -60,6 +51,17 @@ class CommentViewSet(CommunityViewMixin, viewsets.ModelViewSet):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
         
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+        serializer = self.get_serializer(queryset, many=True)
+        comment_id = request.query_params.get('comment_id', None)
+        if comment_id is not None:
+            replies_queryset = Comment.objects.filter(parent_id=comment_id)
+            replies_serializer = self.get_serializer(replies_queryset, many=True)
+            return Response(replies_serializer.data)
+
+        return Response(serializer.data)
+    
     @action(detail=True, methods=['post'])
     def replies(self, request, pk=None):
         parent_comment = self.get_object()
@@ -67,7 +69,7 @@ class CommentViewSet(CommunityViewMixin, viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         serializer.save(user=self.request.user, parent=parent_comment)
         return Response(serializer.data)
-
+    
 class LikeViewSet(viewsets.ViewSet):
     serializer_class = LikeSerializer
 

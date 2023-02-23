@@ -22,6 +22,9 @@ urlpatterns = [
     # 닉네임 중복확인
     path('<int:user_id>/uniquecheck/nickname', views.NicknameUniqueCheck.as_view(), name='uniquecheck_nickname'),
     
+    # 프로필 이미지 수정
+    path('<int:user_id>/update_image/', views.ProfileImageUpdater.as_view(), name='update_image'),
+
     # 유저 정보 확인
     path('user_info/',views.UserViewSet.as_view({'get': 'list'})),
     

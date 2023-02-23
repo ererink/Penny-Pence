@@ -68,6 +68,11 @@ INSTALLED_APPS = [
 
     # schedule
     'schedule',
+
+    # 이미지 프로세서
+    'imagekit',
+    'sorl.thumbnail',
+
 ]
 
 MIDDLEWARE = [
@@ -189,6 +194,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 KAKAO_REST_API_KEY = env.KAKAO_REST_API_KEY
 SOCIAL_AUTH_KAKAO_SECRET = env.SOCIAL_AUTH_KAKAO_SECRET
 
+
 # rest framework
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
@@ -229,6 +235,14 @@ SIMPLE_JWT = {
     'BLACKLIST_AFTER_ROTATION': True,
 }
 
+REST_AUTH_REGISTER_SERIALIZERS = {
+    "REGISTER_SERIALIZER": "accounts.serializers.CustomUserDetailsSerializer"
+}  # 유저 회원가입
+
+REST_AUTH_SERIALIZERS = {
+    "USER_DETAILS_SERIALIZER": "accounts.serializers.CustomUserDetailsSerializer",
+} # SocialLoginView 사용때 만든 serializers.py로 변경
+
 # 학교 알리미 API
 ALIMI_API_KEY = env.ALIMI_API_KEY
 
@@ -238,3 +252,7 @@ NEIS_API_KEY = env.NEIS_API_KEY
 # schedule 앱 설정
 SCHEDULER_AUTOSTART = True
 SCHEDULER_TIME_ZONE = 'Asia/Seoul'
+
+# Media files (user uploaded filed)
+MEDIA_ROOT = BASE_DIR / 'images'
+MEDIA_URL = '/media/'

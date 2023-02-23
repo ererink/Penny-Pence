@@ -4,13 +4,16 @@ from django.conf import settings
 from items.models import Item
 # Create your models here.
 
+def get_default_end_at():
+    return timezone.now() + timezone.timedelta(days=7)
+
 class AuctionItem(models.Model):
     item = models.ForeignKey(Item, on_delete=models.CASCADE) # Item과 inventory가 작성되면 진행
     seller = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='seller')
     buyer = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name='buyer')
     price = models.PositiveIntegerField()
     created_at = models.DateTimeField(default=timezone.now)
-    end_at = models.DateTimeField(default=timezone.now() + timezone.timedelta(days=7)) # 나중에 판매 기한 설정하고 돌려주는 로직짤 때 사용
+    end_at = models.DateTimeField(default=get_default_end_at) # 나중에 판매 기한 설정하고 돌려주는 로직짤 때 사용
 
     # def is_expired(self):
     #     now = timezone.now()
