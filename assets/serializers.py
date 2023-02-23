@@ -7,9 +7,12 @@ class GameDateSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class RankingSerializer(serializers.ModelSerializer):
+    # serializer에서 보내줄 때 user의 nickname을 보내도록 설정
+    user = serializers.CharField(source='user.nickname', read_only=True)
+
     class Meta:
         model = Ranking
-        fields = '__all__'
+        fields = ('user', 'money', 'game_date')
 
 class SectorSerializer(serializers.ModelSerializer):
     class Meta:
