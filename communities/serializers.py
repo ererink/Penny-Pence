@@ -1,10 +1,21 @@
 from rest_framework import serializers
 from .models import Question, Comment, Like, Article
 from accounts.serializers import CustomUserDetailsSerializer
+from django.contrib.contenttypes.models import ContentType
+
+
+def get_filtered_comments(instance, field_name):
+    data = {}
+    content_type = ContentType.objects.get_for_model(instance)
+    comments = Comment.objects.filter(content_type=content_type, object_id=instance.id, parent=None)
+    comment_data = CommentSerializer(comments, many=True).data
+    data[field_name] = comment_data
+    return data
+
 class CommentSerializer(serializers.ModelSerializer):
     user = CustomUserDetailsSerializer()
     like_count = serializers.SerializerMethodField()
-    # replies_count = serializers.SerializerMethodField() # 나중에 서버가 과부하 걸리면 댓글과 대댓글 따로 출력하기 위함.
+    replies_count = serializers.SerializerMethodField()
 
     class Meta:
         model = Comment
@@ -13,8 +24,8 @@ class CommentSerializer(serializers.ModelSerializer):
     def get_like_count(self, obj):
         return obj.likes.count()
     
-    # def get_replies_count(self, obj): # 나중에 서버가 과부하 걸리면 댓글과 대댓글 따로 출력하기 위함.
-    #     return obj.replies.count()
+    def get_replies_count(self, obj):
+        return obj.replies.count()
     
 
 class QuestionSerializer(serializers.ModelSerializer):
@@ -25,6 +36,11 @@ class QuestionSerializer(serializers.ModelSerializer):
         model = Question
         fields = '__all__'
 
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        data.update(get_filtered_comments(instance, 'comments'))
+        return data
+
 class ArticleSerializer(serializers.ModelSerializer):
     user = CustomUserDetailsSerializer()
     comments = CommentSerializer(many=True, read_only=True)
@@ -32,6 +48,11 @@ class ArticleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Article
         fields = '__all__'
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        data.update(get_filtered_comments(instance, 'comments'))
+        return data
 
 class LikeSerializer(serializers.ModelSerializer):
     class Meta:
