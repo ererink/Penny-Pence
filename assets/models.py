@@ -16,6 +16,7 @@ class Sector(models.Model):
     sector_name = models.CharField(max_length=20) # title
     content = models.CharField(max_length=100) # content
     percentage = models.DecimalField(max_digits = 5, decimal_places = 2) # 주가
+    sector_price = models.IntegerField(default=5000)
 
 class News(models.Model):
     title = models.CharField(max_length=100) # 제목
