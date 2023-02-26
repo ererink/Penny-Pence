@@ -3,7 +3,7 @@ from back.settings import AUTH_USER_MODEL
 from django.contrib.auth.models import AbstractUser
 from django.utils.translation import gettext_lazy as _
 from items.models import Item
-from assets.models import GameDate, Sector
+from assets.models import GameDate, Sector, News, GameDate
 from .managers import CustomUserManager
 from imagekit.models import ProcessedImageField
 from imagekit.processors import ResizeToFill
@@ -26,12 +26,15 @@ class User(AbstractUser):
     # 부가정보
     money = models.IntegerField(default=100000, blank=True)                       # 자산 (임시로 blank=True 해놓음)
     school = models.CharField(max_length=10, blank=True)
-    # sector = models.ForeignKey(Sectors, on_delete=models.CASCADE)
-      # 매수목록
-    # position = models.ManyToManyField(Sectors, through=User_Positions)
+    # sector = models.ForeignKey(Sector, on_delete=models.CASCADE)
+    # 매수목록
+    position = models.ManyToManyField(Sector, through='User_Positions')
     # 아이템 
     inventory = models.ManyToManyField(Item, through='User_Items')
-
+    # 뉴스 
+    user_news = models.ManyToManyField(News, through='User_News')
+    # 일차
+    days = models.ForeignKey(GameDate, on_delete=models.CASCADE)
     # 기능
     followers = models.ManyToManyField('self', symmetrical=True, related_name='following')    # Ture: 양방향 관계, 일촌 개념
  
@@ -53,3 +56,9 @@ class User_Positions(models.Model):
 class User_Items(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     item = models.ForeignKey(Item, on_delete=models.CASCADE)
+
+# 뉴스 읽음 여부 ManyToManyField 확장
+class User_News(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    news = models.ForeignKey(News, on_delete=models.CASCADE)
+    read = models.BooleanField(default=False)
