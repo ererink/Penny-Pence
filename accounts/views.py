@@ -230,30 +230,34 @@ class NicknameUniqueCheck(APIView):
 
 class Follow(APIView):
     serializer_class = UserSerializer
+    
+    def get(self, request, user_id):
+        user = get_object_or_404(User, id=user_id)
+        serializer = self.serializer_class(user)
+        
+        followers = user.followers.all()
+        following = user.following.all()
+        followers_serializer = self.serializer_class(followers, many=True)
+        following_serializer = self.serializer_class(following, many=True)
+        
+        response_data = {
+            "user": serializer.data,
+            "followers": followers_serializer.data,
+            "following": following_serializer.data
+        }
 
+        return Response(response_data, status=status.HTTP_200_OK)
+    
     def post(self, request, user_id):
         user = get_object_or_404(User, id=user_id)
         
         if request.user == user:
             return Response({"detail": "자신을 팔로우할 수 없어요!"}, status=status.HTTP_400_BAD_REQUEST)
         if request.user in user.followers.all():
-            return Response({"detail": "이미 친구예요"}, status=status.HTTP_400_BAD_REQUEST)
+            user.followers.remove(request.user)
+            return Response({"detail": "이제 친구가 아니예요 :("}, status=status.HTTP_200_OK)
         
         user.followers.add(request.user)
-        serializer = self.serializer_class(request.user)
-
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-class Unfollow(APIView):
-    serializer_class = UserSerializer
-
-    def delete(self, request, user_id):
-        user = get_object_or_404(User, id=user_id)
-
-        if not request.user.following.filter(id=user_id).exists():
-            return Response({"detail": "친구가 아니예요"}, status=status.HTTP_400_BAD_REQUEST)
-        
-        request.user.following.remove(user)
         serializer = self.serializer_class(request.user)
 
         return Response(serializer.data, status=status.HTTP_200_OK)

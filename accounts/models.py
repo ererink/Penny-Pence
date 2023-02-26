@@ -3,7 +3,8 @@ from back.settings import AUTH_USER_MODEL
 from django.contrib.auth.models import AbstractUser
 from django.utils.translation import gettext_lazy as _
 from items.models import Item
-from assets.models import GameDate, Sector, News, GameDate
+# from assets.models import GameDate, Sector, News
+from assets.models import News
 from .managers import CustomUserManager
 from imagekit.models import ProcessedImageField
 from imagekit.processors import ResizeToFill
@@ -28,16 +29,17 @@ class User(AbstractUser):
     school = models.CharField(max_length=10, blank=True)
     # sector = models.ForeignKey(Sector, on_delete=models.CASCADE)
     # 매수목록
-    position = models.ManyToManyField(Sector, through='User_Positions')
+    position = models.ManyToManyField('assets.Sector', through='User_Positions')
     # 아이템 
     inventory = models.ManyToManyField(Item, through='User_Items')
     # 뉴스 
-    user_news = models.ManyToManyField(News, through='User_News')
+    read_news = models.ManyToManyField('assets.News', through='User_News')
     # 일차
-    days = models.ForeignKey(GameDate, on_delete=models.CASCADE)
+    days = models.ForeignKey('assets.GameDate', on_delete=models.CASCADE, default=1)
     # 기능
     followers = models.ManyToManyField('self', symmetrical=True, related_name='following')    # Ture: 양방향 관계, 일촌 개념
- 
+    following = models.ManyToManyField('self', symmetrical=True, related_name='following')    # symmetrical=True로 설정했기 때문에 following 필드가 자동으로 생성되지 않음
+
 
     objects = CustomUserManager()
 
@@ -47,10 +49,10 @@ class User(AbstractUser):
 # 매수목록 ManyToManyField 확장
 class User_Positions(models.Model):
    user = models.ForeignKey(User, on_delete=models.CASCADE)
-   position = models.ForeignKey(Sector, on_delete=models.CASCADE)
-   day = models.ForeignKey(GameDate, on_delete=models.CASCADE)
-   total = models.IntegerField(default=0)
-   volume = models.IntegerField(default=0)
+   position = models.ForeignKey('assets.Sector', on_delete=models.CASCADE)
+   day = models.ForeignKey('assets.GameDate', on_delete=models.CASCADE)
+   total = models.IntegerField(default=0)       # 총 매수 금액
+   volume = models.IntegerField(default=0)      # 매수수량
 
 # 아이템목록(inventory) ManyToManyField 확장
 class User_Items(models.Model):
@@ -60,5 +62,5 @@ class User_Items(models.Model):
 # 뉴스 읽음 여부 ManyToManyField 확장
 class User_News(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    news = models.ForeignKey(News, on_delete=models.CASCADE)
+    news = models.ForeignKey('assets.News', on_delete=models.CASCADE)
     read = models.BooleanField(default=False)
