@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404
 from .models import GameDate, Ranking, Sector, News
-from .serializers import GameDateSerializer, RankingSerializer, SectorSerializer, NewsSerializer
+from .serializers import GameDateSerializer, RankingSerializer, SectorSerializer, NewsSerializer, User_PositionSerializer
 from rest_framework import status, viewsets, permissions
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, action
@@ -32,7 +32,7 @@ class RankingViewSet(viewsets.ViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
     @action(detail=True, methods=['GET'])
-    def get_ranking_by_game_date(self, request, pk=None):
+    def user_ranking(self, request, pk=None):
         # game_date_id 에 해당하는 게임 날짜 데이터를 가져옴
         game_date = get_object_or_404(GameDate, pk=pk)
         ranking_user = request.user
@@ -50,7 +50,6 @@ class RankingViewSet(viewsets.ViewSet):
             'user_ranking': user_serializer.data,
             'ranking': ranking_serializer.data,
         }
-
         return Response(data)
 
 # 자동 랭킹등록
@@ -168,3 +167,43 @@ def create_news(request):
 #             game_date = day,
 #             sector = sector,
 #         )
+
+# 매수 클릭
+class User_PositionsViewSet(viewsets.ModelViewSet):
+    queryset = User_Positions.objects.all()
+    serializer_class = User_PositionSerializer
+
+    # 주식 매수 처리를 위한 엔드포인트
+    @action(detail=False, methods=['post'])
+    def buy_stock(self, request):
+        print(request.data)
+        user = request.user
+        position_id = request.data.get('position')
+        volume = request.data.get('volume')
+        if not all([user, position_id, volume]):
+            return Response({'error': '필수 입력 항목을 모두 제공해주세요.'}, status=400)
+
+        # 해당 섹터와 날짜에 대한 사용자의 기존 포지션을 가져옴
+        position = User_Positions.objects.filter(user=user, position_id=position_id).first()
+        sector = Sector.objects.get(id=position_id)
+        date = GameDate.objects.latest('id')
+
+        # 총매수금액
+        position.total
+        # 매수주식수량
+        position.volume
+
+        # 매수 비용을 계산
+        price = user.money
+        cost = price * volume
+
+        # 만약 사용자가 해당 섹터에 대한 포지션을 이미 가지고 있다면, 포지션을 업데이트
+        if position:
+            position.total += cost
+            position.volume += volume
+            position.save()
+        else:
+            # 그렇지 않다면, 사용자를 위한 새로운 포지션을 생성
+            position = User_Positions.objects.create(user=user, position=sector, day=date, total=cost, volume=volume)
+
+        return Response({'success': True, 'message': f'{sector.sector_name} {volume}주를 ${cost:.2f}에 매수했습니다.'}, status=200)

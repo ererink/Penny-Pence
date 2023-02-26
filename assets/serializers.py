@@ -1,4 +1,5 @@
 from .models import GameDate, Ranking, Sector, News
+from accounts.models import User_Positions
 from rest_framework import serializers
 
 class GameDateSerializer(serializers.ModelSerializer):
@@ -29,3 +30,10 @@ class NewsSerializer(serializers.ModelSerializer):
         model = News
         fields = '__all__'
 
+class User_PositionSerializer(serializers.ModelSerializer):
+    sector_name = serializers.ReadOnlyField(source='sector.sector_name')
+    sector_percentage = serializers.ReadOnlyField(source='sector.percentage')
+    
+    class Meta:
+        model = User_Positions
+        fields = '__all__'
