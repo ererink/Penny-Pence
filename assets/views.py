@@ -85,18 +85,18 @@ def sell_user_position():
             print("error")
 
 # 오전 5시55분에 자동매도 실행
-schedule.every(1).day.at('05:55').do(sell_user_position)
-while True:
-    schedule.run_pending()
-    time.sleep(1)
-    break
+# schedule.every(1).day.at('05:55').do(sell_user_position)
+# while True:
+#     schedule.run_pending()
+#     time.sleep(1)
+#     break
 
-# 오전 6시에 자동 랭킹등록
-schedule.every(1).day.at("06:00").do(update_ranking)
-while True:
-    schedule.run_pending()
-    time.sleep(1)
-    break
+# # 오전 6시에 자동 랭킹등록
+# schedule.every(1).day.at("06:00").do(update_ranking)
+# while True:
+#     schedule.run_pending()
+#     time.sleep(1)
+#     break
 
 # 산업
 @api_view(['POST'])

@@ -14,7 +14,6 @@ urlpatterns = [
     
     # 팔로우
     path('<int:user_id>/follow/', views.Follow.as_view(), name='follow_user'),
-    path('<int:user_id>/unfollow/', views.Unfollow.as_view(), name='unfollow_user'),
 
     # 학교 검색
     path('search_school/', views.SearchSchool.as_view(), name='search_school'),
