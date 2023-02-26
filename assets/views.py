@@ -27,7 +27,6 @@ def date_create(request):
         ).save()
 
 # 랭킹 리스트 출력
-# 랭킹
 class RankingViewSet(viewsets.ViewSet):
     # 인증된 사용자만 접근 가능하도록
     permission_classes = [permissions.IsAuthenticated]
@@ -38,29 +37,33 @@ class RankingViewSet(viewsets.ViewSet):
         game_date = get_object_or_404(GameDate, pk=pk)
         ranking_user = request.user
 
-        # 이미 DB에 user가 저장되어 있다면 리스트 출력
-        if Ranking.objects.filter(user_id=ranking_user.pk) and Ranking.objects.filter(game_date=game_date):
-            rankings = Ranking.objects.filter(game_date=game_date).order_by('money')
-        
-        else:
-            rankings = Ranking.objects.create(
-                game_date = game_date,
-                money = ranking_user.money,
-                user_id = ranking_user.pk
-                ).save()
-        
-        # Serializer를 통해 데이터 직렬화
-        serializer = RankingSerializer(rankings, many=True)
-        # Response를 통해 직렬화된 데이터 반환
-        return Response(serializer.data)
+        # 해당 유저의 랭킹 데이터 가져오기
+        user_ranking = Ranking.objects.filter(game_date=game_date, user=ranking_user).first()
+        user_serializer = RankingSerializer(user_ranking) if user_ranking else None
 
-# 오전 6시에 함수 실행
-# 입력값을 조절해서 테스트 해봐야할 듯
-schedule.every(1).day.at("06:00").do(RankingViewSet)
-while True:
-    schedule.run_pending()
-    time.sleep(1)
-    break
+        # 상위 5명의 랭킹 데이터 가져오기
+        rankings = Ranking.objects.filter(game_date=game_date).order_by('-money')[:5]
+        ranking_serializer = RankingSerializer(rankings, many=True)
+
+        # Response를 통해 직렬화된 데이터 반환
+        data = {
+            'user_ranking': user_serializer.data,
+            'ranking': ranking_serializer.data,
+        }
+
+        return Response(data)
+
+# 자동 랭킹등록
+def update_ranking():
+    User = get_user_model()
+    for user in User.objects.all():
+        money = user.money
+        # user 필드명이랑 일치시킬 것, 
+        # 자동 매도 후 유저의 하루 이전 게임일자에 저장하도록 변경해야 함
+        game_date = user.game_date 
+        ranking = Ranking.objects.get(game_date=game_date, user=user)
+        ranking.money = money
+        ranking.save()
 
 # 자동매도
 def sell_user_position():
@@ -68,18 +71,29 @@ def sell_user_position():
     users = User.objects.all()
 
     users_positions = User_Positions.objects.all()
-    # print(users_positions)
+    
+    # 매수 목록이 있는 사람들 중에서
     for user_position in users_positions:
+        # 매수 유저와 유저가 일치하고
         if User.objects.get(pk=user_position.pk):
-            user_update = User.objects.get(pk=user_position.pk)
-            user_update.money *= user_position.position.percentage # 퍼센티지
-            # 유저의 데이 테이블도 += 1
-            user_update.save()
+            # 매수유저일자와 유저일자가 있다면
+            if User.objects.get(game_date=users_positions.day):
+                user_update = User.objects.get(pk=user_position.pk)
+                user_update.money *= user_position.position.percentage # 퍼센티지
+                # 유저의 데이 테이블도 += 1
+                user_update.save()
         else:
             print("error")
 
-# 자동매도 실행
+# 오전 5시55분에 자동매도 실행
 schedule.every(1).day.at('05:55').do(sell_user_position)
+while True:
+    schedule.run_pending()
+    time.sleep(1)
+    break
+
+# 오전 6시에 자동 랭킹등록
+schedule.every(1).day.at("06:00").do(update_ranking)
 while True:
     schedule.run_pending()
     time.sleep(1)
@@ -109,8 +123,6 @@ def save_sector(request):
             content = "자동차 산업",
             percentage = percentage
         ).save()
-
-
 
 # 뉴스
 class NewsViewSet(viewsets.ModelViewSet):
