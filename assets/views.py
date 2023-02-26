@@ -26,7 +26,7 @@ def date_create(request):
             game_date = i
         ).save()
 
-
+# 랭킹 리스트 출력
 # 랭킹
 class RankingViewSet(viewsets.ViewSet):
     # 인증된 사용자만 접근 가능하도록
@@ -56,7 +56,7 @@ class RankingViewSet(viewsets.ViewSet):
 
 # 오전 6시에 함수 실행
 # 입력값을 조절해서 테스트 해봐야할 듯
-schedule.every().day.at("06:00").do(RankingViewSet)
+schedule.every(1).day.at("06:00").do(RankingViewSet)
 while True:
     schedule.run_pending()
     time.sleep(1)
@@ -73,12 +73,17 @@ def sell_user_position():
         if User.objects.get(pk=user_position.pk):
             user_update = User.objects.get(pk=user_position.pk)
             user_update.money *= user_position.position.percentage # 퍼센티지
-            # 데이테이블도 += 1
+            # 유저의 데이 테이블도 += 1
             user_update.save()
         else:
             print("error")
 
-# sell_user_position()
+# 자동매도 실행
+schedule.every(1).day.at('05:55').do(sell_user_position)
+while True:
+    schedule.run_pending()
+    time.sleep(1)
+    break
 
 # 산업
 @api_view(['POST'])
