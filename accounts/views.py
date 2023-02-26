@@ -184,57 +184,6 @@ class ProfileImageUpdater(APIView):
         user = get_object_or_404(User, pk=user_id)
         serializer = ProfileImageSerializer(user)
         return Response(serializer.data)
-    
-    # def put(self, request, user_id, image):
-    #     user = User.objects.get(id=user_id)
-        
-    #     # 카카오 프로필 이미지나 수정된 이미지 할당
-    #     img_field = user.profile_img or user.edited_img
-        
-    #     if img_field:
-    #         # 이미지 파일 삭제
-    #         img_field.delete()
-
-    #         # 이미지 캐시 삭제
-    #         cache_name = img_field_400.cache_name
-    #         cache_backend = img_field_400.cache_backend
-    #         cache_backend.delete(cache_name)
-
-    #         # DB에 저장된 이미지 경로 및 캐시 정보 삭제
-    #         if user.profile_img == img_field:
-    #             user.profile_img = None
-    #             user.profile_img_400 = None
-    #             img_field_400 = user.profile_img_400
-    #         else:
-    #             user.edited_img = None
-    #             user.edited_img_400 = None
-    #             img_field_400 = user.edited_img_400
-
-    #         # 이미지 저장 => 수정된 이미지는 edited_img에 저장
-    #         image_name, ext = os.path.splitext(image.name)
-    #         image_name = f"{user.username}-profile-image{ext}"
-    #         user.edited_img.save(image_name, image)
-
-    #         # 이미지 프로세싱 작업 수행
-    #         profile_image_400 = get_thumbnail(user.edited_img, '400x400', crop='center', quality=80)
-    #         profile_image_400_name = f"{user.username}-profile-image-400{ext}"
-    #         img_field_400.save(profile_image_400_name, profile_image_400)
-
-    #         user.save()
-    #     serializers = UserInfo(user, data=request.data)
-
-    #     if serializers.is_valid(raise_exception=True): 
-    #         # 이미지 파일이 있으면, 이미지 처리 후 저장
-    #         if 'profile_img' in request.FILES:
-    #             updater = ProfileImageUpdater()
-    #             updater.update_profile_image(user, request.FILES['profile_img'])
-            
-    #         elif 'edited_img' in request.FILES:
-    #             updater = ProfileImageUpdater()
-    #             updater.update_profile_image(user, request.FILES['edited_img'])
-                                                        
-    #         serializers.save()
-    #         return Response(serializers.data)
         
     def put(self, request, user_id):
         user = User.objects.get(id=user_id)
