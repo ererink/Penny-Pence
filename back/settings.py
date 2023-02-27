@@ -14,6 +14,9 @@ from pathlib import Path
 import env
 from datetime import timedelta
 
+from dotenv import load_dotenv
+load_dotenv()
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -27,7 +30,12 @@ SECRET_KEY = env.SECRET_KEY
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = [
+		# "Elastic Beanstalk URL",
+    "pennypencebean-env.eba-rq6c2en3.ap-northeast-2.elasticbeanstalk.com", # 예시입니다. 본인 URL로 해주세요.
+    "127.0.0.1",
+    "localhost",
+]
 
 
 # Application definition
@@ -72,6 +80,9 @@ INSTALLED_APPS = [
     # 이미지 프로세서
     'imagekit',
     'sorl.thumbnail',
+
+    # AWS 배포
+    'storages',
 
 ]
 
@@ -184,6 +195,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = 'staticfiles'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
@@ -256,3 +268,56 @@ SCHEDULER_TIME_ZONE = 'Asia/Seoul'
 # Media files (user uploaded filed)
 MEDIA_ROOT = BASE_DIR / 'images'
 MEDIA_URL = '/media/'
+
+# AWS
+DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
+
+AWS_ACCESS_KEY_ID = env.AWS_ACCESS_KEY_ID
+AWS_SECRET_ACCESS_KEY = env.AWS_SECRET_ACCESS_KEY
+AWS_STORAGE_BUCKET_NAME = env.AWS_STORAGE_BUCKET_NAME
+
+AWS_REGION = "ap-northeast-2"
+AWS_S3_CUSTOM_DOMAIN = "%s.s3.%s.amazonaws.com" % (
+    AWS_STORAGE_BUCKET_NAME,
+    AWS_REGION,
+)
+
+DEBUG = env.DEBUG == "True"
+
+if DEBUG: 
+    MEDIA_ROOT = BASE_DIR / 'images'
+    MEDIA_URL = '/media/'
+
+else:   
+    DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
+
+    AWS_ACCESS_KEY_ID = env.AWS_ACCESS_KEY_ID
+    AWS_SECRET_ACCESS_KEY = env.AWS_SECRET_ACCESS_KEY
+    AWS_STORAGE_BUCKET_NAME = env.AWS_STORAGE_BUCKET_NAME
+
+    AWS_REGION = "ap-northeast-2"
+    AWS_S3_CUSTOM_DOMAIN = "%s.s3.%s.amazonaws.com" % (
+        AWS_STORAGE_BUCKET_NAME,
+        AWS_REGION,
+    )
+
+
+if DEBUG == True: # 개발(로컬) 환경
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': BASE_DIR / 'db.mysql',
+        }
+    }
+
+else: # 배포(원격, 클라우드) 환경
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.mysql",
+            "NAME": env.DATABASE_NAME,
+            "USER": "pennypence",
+            "PASSWORD": env.DATABASE_PASSWORD, # .env 파일에 value 작성
+            "HOST": env.DATABASE_HOST, # .env 파일에 value 작성
+            "PORT": "3306",
+        }
+    }
