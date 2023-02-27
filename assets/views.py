@@ -52,18 +52,6 @@ class RankingViewSet(viewsets.ViewSet):
         }
         return Response(data)
 
-# 자동 랭킹등록
-def update_ranking():
-    User = get_user_model()
-    for user in User.objects.all():
-        money = user.money
-        # user 필드명이랑 일치시킬 것, 
-        # 자동 매도 후 유저의 하루 이전 게임일자에 저장하도록 변경해야 함
-        game_date = user.game_date 
-        ranking = Ranking.objects.get(game_date=game_date, user=user)
-        ranking.money = money
-        ranking.save()
-
 # 매수 클릭
 class User_PositionsViewSet(viewsets.ModelViewSet):
     queryset = User_Positions.objects.all()
@@ -89,13 +77,11 @@ class User_PositionsViewSet(viewsets.ModelViewSet):
         # 매수 비용을 계산
         total = buy_stock.position.sector_price * volume
         
-        # 총매수금액
+        # 총매수금액 / 매수할때 유저의 현금을 감소시켜줌
         user.money -= buy_stock.total
         user.save()
-        # # 매수주식수량
-        # position.volume
         
-        # User의 현재 돈
+        # User의 현재 돈 / 프론트 출력용
         available_balance = user.money
         
         # 유저의 포지션을 끌고옴
@@ -105,13 +91,13 @@ class User_PositionsViewSet(viewsets.ModelViewSet):
             buy_stock.volume += volume # volume은 매수주식수
             buy_stock.save()
         else:
-            # 그렇지 않다면, 사용자를 위한 새로운 포지션을 생성
+            # 그렇지 않다면, 유저를 위한 새로운 포지션을 생성
             buy_stock = User_Positions.objects.create(user=user, position=buy_stock, day=user.days, total=total, volume=volume)
         
-        # Response에 사용자의 현재 잔액을 함께 보내줌
+        # Response에 매수 메시지와 사용자의 현재 잔액을 함께 보내줌
         return Response({'success': True, 'message': f'{sector.sector_name} {volume}주를 ${total:.2f}에 매수했습니다.', 'available_balance': available_balance}, status=200)
 
-# 자동매도
+# 자동매도 및 랭킹등록
 def sell_user_position():
     User = get_user_model()
 
@@ -119,17 +105,22 @@ def sell_user_position():
     
     # 매수 목록이 있는 사람들 중에서
     for user_position in users_positions:
-        # 매수 유저와 유저가 일치하고
-        if User.objects.get(pk=user_position.pk):
+        # 유저중에서 매수유저라면
+        if User.objects.get(pk=user_position.user.pk):
             # 매수유저일자와 유저일자가 있다면
             if User.objects.get(game_date=users_positions.day):
                 user_update = User.objects.get(pk=user_position.user.pk)
-                user_update.money += (user_position.total * user_position.position.percentage) # 퍼센티지
+                # 총 매수금액에 퍼센티지 곱하기
+                user_update.money += (user_position.total * user_position.position.percentage) 
+                # 랭킹등록
+                ranking = Ranking.objects.get(game_date=users_positions.day, user=user_update.pk)
+                ranking.money = user_update.money
+                ranking.save()
                 # 매도하면서 유저의 데이 증가
                 user_update.days += 1
                 user_update.save()
             else:
-                print("error")
+                pass
 
 # 오전 5시55분에 자동매도 실행
 # schedule.every(1).day.at('05:55').do(sell_user_position)
