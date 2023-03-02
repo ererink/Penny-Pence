@@ -32,7 +32,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = [
 		# "Elastic Beanstalk URL",
-    "pennypencebean-env.eba-rq6c2en3.ap-northeast-2.elasticbeanstalk.com", # 예시입니다. 본인 URL로 해주세요.
+    "pennypencebean-env.eba-rq6c2en3.ap-northeast-2.elasticbeanstalk.com",
     "127.0.0.1",
     "localhost",
 ]
@@ -194,7 +194,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
 STATIC_ROOT = 'staticfiles'
 
 # Default primary key field type
@@ -282,7 +282,7 @@ AWS_S3_CUSTOM_DOMAIN = "%s.s3.%s.amazonaws.com" % (
     AWS_REGION,
 )
 
-DEBUG = env.DEBUG == "True"
+DEBUG = env.DEBUG == True
 
 if DEBUG: 
     MEDIA_ROOT = BASE_DIR / 'images'
