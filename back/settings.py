@@ -282,7 +282,7 @@ AWS_S3_CUSTOM_DOMAIN = "%s.s3.%s.amazonaws.com" % (
     AWS_REGION,
 )
 
-DEBUG = env.DEBUG == False
+DEBUG = env.DEBUG == True
 
 if DEBUG: 
     MEDIA_ROOT = BASE_DIR / 'images'
