@@ -28,7 +28,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = env.SECRET_KEY
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# DEBUG = True
 
 ALLOWED_HOSTS = [
 		# "Elastic Beanstalk URL",
@@ -282,7 +282,7 @@ AWS_S3_CUSTOM_DOMAIN = "%s.s3.%s.amazonaws.com" % (
     AWS_REGION,
 )
 
-DEBUG = env.DEBUG == True
+DEBUG = env.DEBUG == False
 
 if DEBUG: 
     MEDIA_ROOT = BASE_DIR / 'images'
