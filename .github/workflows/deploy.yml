@@ -2,7 +2,8 @@ name: EB_Deploy
 
 on:
   push:
-    branches: [develop]
+    branches: 
+      - develop
 
 jobs: 
   deploy: 
