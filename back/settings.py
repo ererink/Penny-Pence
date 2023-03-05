@@ -32,7 +32,7 @@ SECRET_KEY = env.SECRET_KEY
 
 ALLOWED_HOSTS = [
 		# "Elastic Beanstalk URL",
-    "Pennypencebean-env.eba-5nz8sfpq.ap-northeast-2.elasticbeanstalk.com",
+    "Metabase-env.eba-bwmu3mpe.ap-northeast-2.elasticbeanstalk.com",
     "127.0.0.1",
     "localhost",
 ]
