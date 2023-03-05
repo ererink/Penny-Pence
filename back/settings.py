@@ -32,7 +32,7 @@ SECRET_KEY = env.SECRET_KEY
 
 ALLOWED_HOSTS = [
 		# "Elastic Beanstalk URL",
-    "pennypencebean-env.eba-rq6c2en3.ap-northeast-2.elasticbeanstalk.com",
+    "Pennypencebean-env.eba-5nz8sfpq.ap-northeast-2.elasticbeanstalk.com",
     "127.0.0.1",
     "localhost",
 ]
@@ -269,20 +269,9 @@ SCHEDULER_TIME_ZONE = 'Asia/Seoul'
 MEDIA_ROOT = BASE_DIR / 'images'
 MEDIA_URL = '/media/'
 
-# AWS
-DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
 
-AWS_ACCESS_KEY_ID = env.AWS_ACCESS_KEY_ID
-AWS_SECRET_ACCESS_KEY = env.AWS_SECRET_ACCESS_KEY
-AWS_STORAGE_BUCKET_NAME = env.AWS_STORAGE_BUCKET_NAME
-
-AWS_REGION = "ap-northeast-2"
-AWS_S3_CUSTOM_DOMAIN = "%s.s3.%s.amazonaws.com" % (
-    AWS_STORAGE_BUCKET_NAME,
-    AWS_REGION,
-)
-
-DEBUG = env.DEBUG == True
+# AWS 개발 & 배포 환경 분리
+DEBUG = env.DEBUG == False
 
 if DEBUG: 
     MEDIA_ROOT = BASE_DIR / 'images'
