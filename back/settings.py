@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 
 from pathlib import Path
 import env
+import os
 from datetime import timedelta
 
 from dotenv import load_dotenv
@@ -25,7 +26,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = env.SECRET_KEY
+SECRET_KEY = os.getenv("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 # DEBUG = True
@@ -157,7 +158,7 @@ WSGI_APPLICATION = 'back.wsgi.application'
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
 
-DATABASES = env.DATABASES
+DATABASES = os.getenv("DATABASES")
 
 
 # Password validation
@@ -203,8 +204,8 @@ STATIC_ROOT = 'staticfiles'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # kakao social login 
-KAKAO_REST_API_KEY = env.KAKAO_REST_API_KEY
-SOCIAL_AUTH_KAKAO_SECRET = env.SOCIAL_AUTH_KAKAO_SECRET
+KAKAO_REST_API_KEY = os.getenv("KAKAO_REST_API_KEY")
+SOCIAL_AUTH_KAKAO_SECRET = os.getenv("SOCIAL_AUTH_KAKAO_SECRET")
 
 
 # rest framework
@@ -256,10 +257,10 @@ REST_AUTH_SERIALIZERS = {
 } # SocialLoginView 사용때 만든 serializers.py로 변경
 
 # 학교 알리미 API
-ALIMI_API_KEY = env.ALIMI_API_KEY
+ALIMI_API_KEY = os.getenv("ALIMI_API_KEY")
 
 # 학교 검색을 위한 나이스 API
-NEIS_API_KEY = env.NEIS_API_KEY
+NEIS_API_KEY = os.getenv("NEIS_API_KEY")
 
 # schedule 앱 설정
 SCHEDULER_AUTOSTART = True
@@ -271,7 +272,7 @@ MEDIA_URL = '/media/'
 
 
 # AWS 개발 & 배포 환경 분리
-DEBUG = env.DEBUG == False
+DEBUG = os.getenv("DEBUG") == "False"
 
 if DEBUG: 
     MEDIA_ROOT = BASE_DIR / 'images'
@@ -280,9 +281,9 @@ if DEBUG:
 else:   
     DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
 
-    AWS_ACCESS_KEY_ID = env.AWS_ACCESS_KEY_ID
-    AWS_SECRET_ACCESS_KEY = env.AWS_SECRET_ACCESS_KEY
-    AWS_STORAGE_BUCKET_NAME = env.AWS_STORAGE_BUCKET_NAME
+    AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
+    AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
+    AWS_STORAGE_BUCKET_NAME = os.getenv("AWS_STORAGE_BUCKET_NAME")
 
     AWS_REGION = "ap-northeast-2"
     AWS_S3_CUSTOM_DOMAIN = "%s.s3.%s.amazonaws.com" % (
@@ -303,10 +304,10 @@ else: # 배포(원격, 클라우드) 환경
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.mysql",
-            "NAME": env.DATABASE_NAME,
+            "NAME": os.getenv("DATABASE_NAME"),
             "USER": "pennypence",
-            "PASSWORD": env.DATABASE_PASSWORD, # .env 파일에 value 작성
-            "HOST": env.DATABASE_HOST, # .env 파일에 value 작성
+            "PASSWORD": os.getenv("DATABASE_PASSWORD"), # .env 파일에 value 작성
+            "HOST": os.getenv("DATABASE_HOST"), # .env 파일에 value 작성
             "PORT": "3306",
         }
     }
