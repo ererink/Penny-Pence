@@ -271,7 +271,7 @@ MEDIA_URL = '/media/'
 
 
 # AWS 개발 & 배포 환경 분리
-DEBUG = env.DEBUG == False
+DEBUG = env.DEBUG == True
 
 if DEBUG: 
     MEDIA_ROOT = BASE_DIR / 'images'
