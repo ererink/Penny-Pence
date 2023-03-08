@@ -288,7 +288,7 @@ else:
         AWS_REGION,
     )
 
-  
+    
 if DEBUG == True: # 개발(로컬) 환경
     DATABASES = {
         'default': {
