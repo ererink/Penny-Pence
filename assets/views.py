@@ -2,9 +2,11 @@ from django.shortcuts import render, get_object_or_404
 from .models import GameDate, Ranking, Sector, News
 from .serializers import GameDateSerializer, RankingSerializer, SectorSerializer, NewsSerializer, User_PositionSerializer
 from rest_framework import status, viewsets, permissions
+from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, action
 from .sector_percentage import *
+
 
 # accounts 앱
 from django.contrib.auth import get_user_model
@@ -205,3 +207,12 @@ def create_news(request):
 #             game_date = day,
 #             sector = sector,
 #         )
+
+
+
+# Create your views here.
+class TestView(APIView):
+    permission_classes = [permissions.AllowAny]
+
+    def get(self, request):
+        return Response("Swagger 연동 테스트")
