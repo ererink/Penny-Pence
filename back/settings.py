@@ -31,7 +31,7 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 
 ALLOWED_HOSTS = [
 		# "Elastic Beanstalk URL",
-    "Metabase-env.eba-bwmu3mpe.ap-northeast-2.elasticbeanstalk.com",
+    "Pennypencebeans-env.eba-pemr7ys8.ap-northeast-2.elasticbeanstalk.com",
     "127.0.0.1",
     "localhost",
 ]
