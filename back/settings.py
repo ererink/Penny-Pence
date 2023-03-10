@@ -69,8 +69,8 @@ INSTALLED_APPS = [
     # provider
     'allauth.socialaccount.providers.kakao',
 
-    # CORS -> 프론트와 연결
-    'corsheaders',
+    # # CORS -> 프론트와 연결
+    # 'corsheaders',
 
     # schedule
     'schedule',
