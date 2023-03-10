@@ -19,7 +19,7 @@ load_dotenv()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-    
+  
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
@@ -69,8 +69,8 @@ INSTALLED_APPS = [
     # provider
     'allauth.socialaccount.providers.kakao',
 
-    # # CORS -> 프론트와 연결
-    # 'corsheaders',
+    # CORS -> 프론트와 연결
+    'corsheaders',
 
     # schedule
     'schedule',
@@ -99,41 +99,41 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-# CORS_ORIGIN_WHITELIST = [
-#     'http://127.0.0.1:3000',
-#     'http://localhost:3000',
-# ]
-# CORS_ALLOW_CREDENTIALS = False
+CORS_ORIGIN_WHITELIST = [
+    'http://127.0.0.1:3000',
+    'http://localhost:3000',
+]
+CORS_ALLOW_CREDENTIALS = False
 
-# # CORS 관련 추가
-# CORS_ALLOW_METHODS = [
-#     "DELETE",
-#     "GET",
-#     "OPTIONS",
-#     "PATCH",
-#     "POST",
-#     "PUT",
-# ]
+# CORS 관련 추가
+CORS_ALLOW_METHODS = [
+    "DELETE",
+    "GET",
+    "OPTIONS",
+    "PATCH",
+    "POST",
+    "PUT",
+]
 
-# CORS_ALLOW_HEADERS = (
-#     'accept',
-#     'accept-encoding',
-#     'authorization',
-#     'access-control-request-method',
-#     'access-control-request-headers',
-#     'access-control-allow-origin',
-#     'content-type',
-#     'dnt',
-#     'pragma',
-#     'Expires',
-#     'origin',
-#     'cache-control',
-#     'user-agent',
-#     'x-csrftoken',
-#     'x-requested-with',
-#     'access-token',
-#     'Refresh',
-# )
+CORS_ALLOW_HEADERS = (
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'access-control-request-method',
+    'access-control-request-headers',
+    'access-control-allow-origin',
+    'content-type',
+    'dnt',
+    'pragma',
+    'Expires',
+    'origin',
+    'cache-control',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+    'access-token',
+    'Refresh',
+)
 ROOT_URLCONF = 'back.urls'
 
 TEMPLATES = [
@@ -196,7 +196,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
 STATIC_URL = '/static/'
-STATIC_ROOT = 'staticfiles'
+STATIC_ROOT = 'static'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
