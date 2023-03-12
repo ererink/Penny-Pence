@@ -15,6 +15,8 @@ from datetime import timedelta
 import os
 from dotenv import load_dotenv
 load_dotenv()
+import json
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -159,7 +161,7 @@ WSGI_APPLICATION = 'back.wsgi.application'
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
 
-DATABASES = os.getenv('DATABASES')
+# DATABASES = json.loads(os.getenv('DATABASES'))
 
 
 # Password validation
@@ -272,7 +274,28 @@ MEDIA_URL = '/media/'
 
 
 # AWS 개발 & 배포 환경 분리
-DEBUG = os.getenv("DEBUG") == "False"
+DEBUG = os.getenv("DEBUG") == "True"
+
+if DEBUG == True: # 개발(로컬) 환경
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': BASE_DIR / 'db.mysql',
+        }
+    }
+
+else: # 배포(원격, 클라우드) 환경
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.mysql",
+            "NAME": os.getenv("DATABASE_NAME"), 
+            "USER": "pennypence",
+            "PASSWORD": os.getenv("DATABASE_PASSWORD"), 
+            "HOST": os.getenv("DATABASE_HOST"), 
+            "PORT": "3306",
+        }
+    }
+
 
 if DEBUG: 
     MEDIA_ROOT = BASE_DIR / 'images'
@@ -291,23 +314,23 @@ else:
         AWS_REGION,
     )
 
-    
-if DEBUG == True: # 개발(로컬) 환경
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.mysql',
-            'NAME': BASE_DIR / 'db.mysql',
-        }
-    }
+# 상단에 다시 작성함.  
+# if DEBUG == True: # 개발(로컬) 환경
+#     DATABASES = {
+#         'default': {
+#             'ENGINE': 'django.db.backends.mysql',
+#             'NAME': BASE_DIR / 'db.mysql',
+#         }
+#     }
 
-else: # 배포(원격, 클라우드) 환경
-    DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.mysql",
-            "NAME": os.getenv("DATABASE_NAME"),
-            "USER": "pennypence",
-            "PASSWORD": os.getenv("DATABASE_PASSWORD"), # .env 파일에 value 작성
-            "HOST": os.getenv("DATABASE_HOST"), # .env 파일에 value 작성
-            "PORT": "3306",
-        }
-    }
+# else: # 배포(원격, 클라우드) 환경
+#     DATABASES = {
+#         "default": {
+#             "ENGINE": "django.db.backends.mysql",
+#             "NAME": os.getenv("DATABASE_NAME"),
+#             "USER": "pennypence",
+#             "PASSWORD": os.getenv("DATABASE_PASSWORD"), # .env 파일에 value 작성
+#             "HOST": os.getenv("DATABASE_HOST"), # .env 파일에 value 작성
+#             "PORT": "3306",
+#         }
+#     }
