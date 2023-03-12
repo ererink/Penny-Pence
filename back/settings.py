@@ -161,7 +161,7 @@ WSGI_APPLICATION = 'back.wsgi.application'
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
 
-# DATABASES = json.loads(os.getenv('DATABASES'))
+DATABASES = json.loads(os.getenv('DATABASES'))
 
 
 # Password validation
@@ -296,7 +296,7 @@ else: # 배포(원격, 클라우드) 환경
         }
     }
 
-
+  
 if DEBUG: 
     MEDIA_ROOT = BASE_DIR / 'images'
     MEDIA_URL = '/media/'
