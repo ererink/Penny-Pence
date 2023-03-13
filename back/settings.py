@@ -33,7 +33,7 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 
 ALLOWED_HOSTS = [
 		# "Elastic Beanstalk URL",
-    "Pennypencebeans-env.eba-pemr7ys8.ap-northeast-2.elasticbeanstalk.com",
+    "Pennypenceemhaki-env.eba-xknmqkje.ap-northeast-2.elasticbeanstalk.com",
     "127.0.0.1",
     "localhost",
 ]
@@ -289,7 +289,7 @@ else: # 배포(원격, 클라우드) 환경
         "default": {
             "ENGINE": "django.db.backends.mysql",
             "NAME": os.getenv("DATABASE_NAME"), 
-            "USER": "pennypence",
+            "USER": "emhaki",
             "PASSWORD": os.getenv("DATABASE_PASSWORD"), 
             "HOST": os.getenv("DATABASE_HOST"), 
             "PORT": "3306",
