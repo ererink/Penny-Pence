@@ -296,7 +296,7 @@ else: # 배포(원격, 클라우드) 환경
         }
     }
 
-  
+    
 if DEBUG: 
     MEDIA_ROOT = BASE_DIR / 'images'
     MEDIA_URL = '/media/'
