@@ -279,13 +279,9 @@ DEBUG = os.getenv("DEBUG") == "True"
 if DEBUG == True: # 개발(로컬) 환경
     DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'pennypence_DB',
-        'USER': 'root',
-        'PASSWORD': 'dlaudgkr12!',
-        'HOST': 'localhost',
-        'PORT': '3306',
-        }
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+      }
     }
     
 else: # 배포(원격, 클라우드) 환경
