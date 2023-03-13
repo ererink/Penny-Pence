@@ -161,7 +161,7 @@ WSGI_APPLICATION = 'back.wsgi.application'
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
 
-DATABASES = json.loads(os.getenv('DATABASES'))
+DATABASES = os.getenv('DATABASES')
 
 
 # Password validation
@@ -278,9 +278,13 @@ DEBUG = os.getenv("DEBUG") == "True"
 
 if DEBUG == True: # 개발(로컬) 환경
     DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.mysql',
-            'NAME': BASE_DIR / 'db.mysql',
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'pennypence_DB',
+        'USER': 'root',
+        'PASSWORD': 'dlaudgkr12!',
+        'HOST': 'localhost',
+        'PORT': '3306',
         }
     }
 
