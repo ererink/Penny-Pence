@@ -272,7 +272,7 @@ SCHEDULER_TIME_ZONE = 'Asia/Seoul'
 MEDIA_ROOT = BASE_DIR / 'images'
 MEDIA_URL = '/media/'
 
-  
+    
 # AWS 개발 & 배포 환경 분리
 DEBUG = os.getenv("DEBUG") == "True"
 
