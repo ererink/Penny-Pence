@@ -10,11 +10,16 @@ class CustomUserDetailsSerializer(UserDetailsSerializer):
         fields = UserDetailsSerializer.Meta.fields + (
             'nickname',
             'profile_img',
+            'edited_img',
             'email',
-            'money'
-            # 추가 예정
+            'money',
+            'inventory',
+            'school',
+            'position',
+            'followers',
+            'following',
         )
-        read_only_fields = ('email', 'money', )
+        read_only_fields = ('email', 'money', 'inventory', 'school', 'followers', 'following')
 
 class KakaoLoginSerializer(serializers.Serializer):
     nickname = serializers.CharField()
@@ -45,11 +50,12 @@ class UserInfo(serializers.ModelSerializer):
     user = CustomUserDetailsSerializer(read_only=True)
     school_name = serializers.CharField(source='school', required=False)
     edited_img = serializers.ImageField(max_length=None, use_url=True, required=False)
+    inventory = serializers.SlugRelatedField(many=True, read_only=True, slug_field='name')
 
     class Meta:
         model = User
         fields = '__all__'
-        read_only_fields = ('email', 'password', 'school', 'followers')
+        read_only_fields = ('email', 'password', 'school', 'followers', 'inventory')
 
     def update(self, instance, validated_data):
         instance.nickname = validated_data.get('nickname', instance.nickname)
@@ -58,6 +64,7 @@ class UserInfo(serializers.ModelSerializer):
         instance.profile_img = validated_data.get('profile_img', instance.profile_img)
         instance.school = validated_data.get('school', instance.school)
         instance.edited_img = validated_data.get('edited_img', instance.edited_img)
+        instance.inventory = validated_data.get('inventory', instance.inventory)
         instance.save()
 
         return instance
