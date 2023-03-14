@@ -87,7 +87,7 @@ INSTALLED_APPS = [
     # API Swagger
     'rest_framework_swagger',
     'drf_yasg',
-    
+
 ]
 
 MIDDLEWARE = [
