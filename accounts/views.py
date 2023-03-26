@@ -173,7 +173,7 @@ class UserProfile(APIView):
                 return Response(serializers.data)
             else:
                 return Response(serializers.errors, status=status.HTTP_400_BAD_REQUEST)
- 
+
  # 프로필 이미지 업데이트
 class ProfileImageUpdater(APIView):
     serializer_class = ProfileImageSerializer
