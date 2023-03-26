@@ -1,10 +1,8 @@
 from django.db import models
-from back.settings import AUTH_USER_MODEL
 from django.contrib.auth.models import AbstractUser
 from django.utils.translation import gettext_lazy as _
 from items.models import Item
 # from assets.models import GameDate, Sector, News
-from assets.models import News
 from .managers import CustomUserManager
 from imagekit.models import ProcessedImageField
 from imagekit.processors import ResizeToFill
