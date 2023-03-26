@@ -209,7 +209,7 @@ def create_news(request):
 #         )
 
 
-
+  
 # Create your views here.
 class TestView(APIView):
     permission_classes = [permissions.AllowAny]
