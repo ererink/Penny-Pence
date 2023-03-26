@@ -269,8 +269,8 @@ SCHEDULER_AUTOSTART = True
 SCHEDULER_TIME_ZONE = 'Asia/Seoul'
 
 # Media files (user uploaded filed)
-MEDIA_ROOT = BASE_DIR / 'images'
-MEDIA_URL = '/media/'
+# MEDIA_ROOT = BASE_DIR / 'images'
+# MEDIA_URL = '/media/'
 
 
 # AWS 개발 & 배포 환경 분리
