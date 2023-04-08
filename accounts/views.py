@@ -2,7 +2,6 @@ from django.shortcuts import redirect
 from django.shortcuts import get_object_or_404
 from rest_framework.views import APIView
 from rest_framework.response import Response
-import env
 import requests
 from json.decoder import JSONDecodeError
 from accounts.models import User
@@ -13,17 +12,16 @@ from json.decoder import JSONDecodeError
 from dj_rest_auth.registration.views import SocialLoginView
 from allauth.socialaccount.providers.kakao import views as kakao_view
 from allauth.socialaccount.providers.oauth2.client import OAuth2Client
-from rest_framework.decorators import api_view
 from accounts.serializers import UserInfo, SchoolSerializer, KakaoLoginSerializer, NicknameUniqueCheckSerializer, ProfileImageSerializer
 from rest_framework.permissions import IsAuthenticated
 
 from rest_framework import serializers
-from rest_framework import authentication, viewsets
+from rest_framework import viewsets
 
 import os
-from imagekit import ImageSpec, register
-from imagekit.processors import ResizeToFill
-from sorl.thumbnail import get_thumbnail
+# from imagekit import ImageSpec, register
+# from imagekit.processors import ResizeToFill
+# from sorl.thumbnail import get_thumbnail
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -41,11 +39,11 @@ KAKAO_CALLBACK_URI = BASE_URL + 'accounts/kakao/callback/'
 
 # 카카오 로그인
 def kakao_login(request):
-    rest_api_key = env.KAKAO_REST_API_KEY
+    rest_api_key = os.getenv("KAKAO_REST_API_KEY")
     return redirect(f"https://kauth.kakao.com/oauth/authorize?client_id={rest_api_key}&redirect_uri={KAKAO_CALLBACK_URI}&response_type=code")
 
 def kakao_callback(request):
-    rest_api_key = env.KAKAO_REST_API_KEY
+    rest_api_key = os.getenv("KAKAO_REST_API_KEY")
     code = request.GET.get('code')
     redirect_uri = 'http://localhost:3000/oauth/kakao/callback/'
     # redirect_uri = "https://master.d3n2xysrd0lvj9.amplifyapp.com/oauth/callback/kakao"
@@ -175,7 +173,7 @@ class UserProfile(APIView):
                 return Response(serializers.data)
             else:
                 return Response(serializers.errors, status=status.HTTP_400_BAD_REQUEST)
- 
+
  # 프로필 이미지 업데이트
 class ProfileImageUpdater(APIView):
     serializer_class = ProfileImageSerializer
@@ -266,7 +264,7 @@ class SearchSchool(APIView):
     serializer_class = SchoolSerializer
         
     def get(self, request):
-        api_key = env.NEIS_API_KEY
+        api_key = os.getenv("NEIS_API_KEY")
         query = request.GET.get('query')    # 검색어 입력
         if not query:
             return Response({'error': '검색어가 없어요'}, status=status.HTTP_400_BAD_REQUEST)
